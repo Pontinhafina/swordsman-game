@@ -57,6 +57,11 @@ class SpriteManager:
         self.images['slash_vfx'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/slash_vfx.png')
         self.images['coruja'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/coruja_helper.png')
         self.images['shockwave'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/shockwave.png')
+        self.images['icicle'] = self.load_image('SPRITES/PLATAFORMA/3 Objects/Hazards/icicle.png')
+        self.images['bat'] = self.load_image('SPRITES/ENEMIES/bat.png')
+        self.images['scorpion'] = self.load_image('SPRITES/ENEMIES/scorpion.png')
+        self.images['frost_boss'] = self.load_image('SPRITES/ENEMIES/frost_boss.png')
+        self.images['ice_spike'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/ice_spike.png')
 
         # Props
         self.images['tree_1'] = self.load_image('SPRITES/PLATAFORMA/3 Objects/Trees/1.png')

@@ -11,14 +11,15 @@ from game.enemy import OrcEnemy
 from game.objects import (
     Coin, Chest, KeyItem, RuneGate, GoalFlag,
     Spikes, SawBlade, MovingPlatform, CrackedWall,
-    CheckpointTorch, PotionItem, GemItem, OwlHelper, BossShockwave
+    CheckpointTorch, PotionItem, GemItem, OwlHelper, BossShockwave,
+    FallingIcicle, IceSpikeHazard
 )
 from game.level import Level
 
 class PlatformerGame:
     def __init__(self):
         pygame.init()
-        pygame.display.set_caption("Swordsman: A Saga das 8 Fases")
+        pygame.display.set_caption("Swordsman: A Saga das 10 Fases")
 
         self.fullscreen = False
         self.window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
@@ -32,7 +33,7 @@ class PlatformerGame:
         self.sprite_mgr = init_sprites()
 
         self.current_stage = 1
-        self.total_stages = 8
+        self.total_stages = 10
         self.state = 'title' # 'title', 'playing', 'paused', 'stage_clear', 'gameover', 'victory'
 
         self.stats = {'score': 0, 'coins': 0}
@@ -47,11 +48,13 @@ class PlatformerGame:
             "FASE 1: AS FRONTEIRAS DA FLORESTA & TORRE DE VIGIA",
             "FASE 2: AS RUÍNAS DO ENTARDECER & LÂMINAS DE SERRA",
             "FASE 3: O DESFILADEIRO DOS SALGUEIROS & ESCALADA",
-            "FASE 4: AS CATACUMBAS SUBTERRÂNEAS ALAGADAS",
-            "FASE 5: O PÂNTANO DA LUA DE SANGUE & CASTELO",
-            "FASE 6: O PICO CONGELADO DOS VENTOS",
-            "FASE 7: A FUNDIÇÃO VULCÂNICA DOS ORCS",
-            "FASE 8: A GRANDE FORTALEZA DO GENERAL ORC (CLÍMAX)"
+            "FASE 4: AS DUNAS ESCALDANTES & TEMPLO DO DESERTO",
+            "FASE 5: O OÁSIS SECRETO & CATACUMBA ENTERRADA",
+            "FASE 6: AS CATACUMBAS SUBTERRÂNEAS ALAGADAS",
+            "FASE 7: AS CAVERNAS DE CRISTAL E ESTALACTITES",
+            "FASE 8: O TRONO GLACIAL DO TITÃ DE GELO (BOSS)",
+            "FASE 9: A FUNDIÇÃO VULCÂNICA DOS ORCS",
+            "FASE 10: A GRANDE FORTALEZA DO GENERAL ORC (CLÍMAX FINAL)"
         ]
 
         self.level = None
@@ -68,6 +71,8 @@ class PlatformerGame:
         self.gems = []
         self.owls = []
         self.shockwaves = []
+        self.icicles = []
+        self.ice_spikes = []
         self.key_item = None
         self.rune_gate = None
         self.goal = None
@@ -108,6 +113,8 @@ class PlatformerGame:
         self.gems = self.level.gems
         self.owls = self.level.owls
         self.shockwaves = self.level.shockwaves
+        self.icicles = self.level.icicles
+        self.ice_spikes = self.level.ice_spikes
         self.key_item = self.level.key_item
         self.rune_gate = self.level.rune_gate
         self.goal = self.level.goal
@@ -117,7 +124,7 @@ class PlatformerGame:
         self.cam_x = 0.0
         self.cam_y = 0.0
 
-        if stage_num == 8:
+        if stage_num in [8, 10]:
             sound.play_bgm('boss')
         else:
             sound.play_bgm('stage')
@@ -237,6 +244,16 @@ class PlatformerGame:
         self.shockwaves = [sw for sw in self.shockwaves if sw.lifetime > 0]
         self.level.shockwaves = self.shockwaves
 
+        # Falling Icicles
+        for ic in self.icicles:
+            ic.update(dt, self.player, self.level)
+
+        # Ice Spike Hazards
+        for isp in self.ice_spikes:
+            isp.update(dt, self.player)
+        self.ice_spikes = [isp for isp in self.ice_spikes if isp.lifetime > 0]
+        self.level.ice_spikes = self.ice_spikes
+
         # Moving Platforms
         for mp in self.moving_platforms:
             mp.update(dt, self.player)
@@ -280,7 +297,7 @@ class PlatformerGame:
         # Goal Flag / Stage Complete
         if self.goal:
             is_boss_beaten = not self.boss or self.boss.is_dead
-            if self.current_stage != 8 or is_boss_beaten:
+            if self.current_stage not in [8, 10] or is_boss_beaten:
                 won = self.goal.update(dt, self.player, self.rune_gate)
                 if won:
                     self.saved_hero_level = self.player.hero_level
@@ -348,6 +365,14 @@ class PlatformerGame:
         for sb in self.saw_blades:
             sb.draw(self.canvas, self.sprite_mgr, final_cam_x, final_cam_y)
 
+        # Falling Icicles
+        for ic in self.icicles:
+            ic.draw(self.canvas, self.sprite_mgr, final_cam_x, final_cam_y)
+
+        # Ice Spike Hazards
+        for isp in self.ice_spikes:
+            isp.draw(self.canvas, self.sprite_mgr, final_cam_x, final_cam_y)
+
         # Boss Shockwaves
         for sw in self.shockwaves:
             sw.draw(self.canvas, self.sprite_mgr, final_cam_x, final_cam_y)
@@ -368,7 +393,7 @@ class PlatformerGame:
 
         # Goal Flag
         if self.goal:
-            if self.current_stage != 8 or (self.boss and self.boss.is_dead):
+            if self.current_stage not in [8, 10] or (self.boss and self.boss.is_dead):
                 self.goal.draw(self.canvas, self.sprite_mgr, final_cam_x, final_cam_y)
 
         # Enemies
@@ -431,27 +456,33 @@ class PlatformerGame:
         t_score = self.font.render(f"PTS: {self.stats['score']}", False, COLOR_WHITE)
         self.canvas.blit(t_score, (410, 24))
 
-        # Boss health bar in stage 8
-        if self.current_stage == 8 and self.boss and not self.boss.is_dead and self.player.x > 50 * 32:
+        # Boss health bar in stage 8 (Frost Boss) & stage 10 (General Orc)
+        if self.boss and not self.boss.is_dead and self.player.x > 45 * 32:
             bx = 140
             by = 45
             bw = 200
             bh = 10
             pygame.draw.rect(self.canvas, (0, 0, 0), (bx - 2, by - 14, bw + 4, bh + 16))
-            title = "⚡ GENERAL ORC ENFURECIDO ⚡" if self.boss.enraged else "⚔️ CHEFE: GENERAL ORC ⚔️"
-            t_boss = self.font.render(title, False, COLOR_RED)
+
+            if getattr(self.boss, 'is_frost_boss', False):
+                title = "⚡ TITÃ GLACIAL ENFURECIDO ⚡" if self.boss.enraged else "❄️ CHEFE: TITÃ GLACIAL DO NORTE ❄️"
+                bar_color = COLOR_CYAN if not self.boss.enraged else (160, 240, 255)
+            else:
+                title = "⚡ GENERAL ORC ENFURECIDO ⚡" if self.boss.enraged else "⚔️ CHEFE: GENERAL ORC SUPREMO ⚔️"
+                bar_color = COLOR_RED if not self.boss.enraged else (255, 40, 40)
+
+            t_boss = self.font.render(title, False, bar_color)
             self.canvas.blit(t_boss, (bx + bw / 2 - t_boss.get_width() / 2, by - 12))
 
             pygame.draw.rect(self.canvas, (255, 255, 255), (bx, by, bw, bh), 1)
             pct = max(0.0, self.boss.hp / self.boss.max_hp)
-            c = (255, 40, 40) if self.boss.enraged else COLOR_RED
-            pygame.draw.rect(self.canvas, c, (bx + 1, by + 1, int((bw - 2) * pct), bh - 2))
+            pygame.draw.rect(self.canvas, bar_color, (bx + 1, by + 1, int((bw - 2) * pct), bh - 2))
 
     def render_title(self):
-        t1 = self.font_title.render("SWORDSMAN: A SAGA DAS 8 FASES", False, COLOR_GOLD)
+        t1 = self.font_title.render("SWORDSMAN: A SAGA DAS 10 FASES", False, COLOR_GOLD)
         self.canvas.blit(t1, (INTERNAL_WIDTH / 2 - t1.get_width() / 2, 35))
 
-        t2 = self.font.render("Campanha Completa de 8 Fases • Trilha Sonora Chiptune • Coruja Guia", False, (160, 185, 215))
+        t2 = self.font.render("Campanha Completa de 10 Fases • Deserto, Gelo, Vulcão • 2 Chefões Épicos", False, (160, 185, 215))
         self.canvas.blit(t2, (INTERNAL_WIDTH / 2 - t2.get_width() / 2, 65))
 
         # Hero preview
@@ -465,9 +496,9 @@ class PlatformerGame:
             o_frame = owl.subsurface(pygame.Rect(0, 0, 32, 32))
             self.canvas.blit(o_frame, (INTERNAL_WIDTH / 2 - 16, 110))
 
-        boss = self.sprite_mgr.get('orc3_idle')
+        boss = self.sprite_mgr.get('frost_boss')
         if boss:
-            b_frame = boss.subsurface(pygame.Rect(0, 128, 64, 64))
+            b_frame = boss.subsurface(pygame.Rect(0, 0, 64, 64))
             self.canvas.blit(b_frame, (INTERNAL_WIDTH / 2 + 30, 88))
 
         if int(pygame.time.get_ticks() / 450) % 2 == 0:
@@ -517,10 +548,10 @@ class PlatformerGame:
         overlay.fill((10, 30, 20, 230))
         self.canvas.blit(overlay, (0, 0))
 
-        t = self.font_title.render("🎉 PARABÉNS! VOCÊ LIBERTOU TODAS AS 8 TERRAS! 🎉", False, COLOR_GOLD)
+        t = self.font_title.render("🎉 PARABÉNS! VOCÊ LIBERTOU TODAS AS 10 TERRAS! 🎉", False, COLOR_GOLD)
         self.canvas.blit(t, (INTERNAL_WIDTH / 2 - t.get_width() / 2, 50))
 
-        sub = self.font.render("O General Orc e seu exército foram derrotados para sempre!", False, COLOR_GREEN)
+        sub = self.font.render("O Titã Glacial e o General Orc Supremo foram derrotados!", False, COLOR_GREEN)
         self.canvas.blit(sub, (INTERNAL_WIDTH / 2 - sub.get_width() / 2, 85))
 
         elapsed = (pygame.time.get_ticks() - self.start_ticks) // 1000

@@ -626,3 +626,102 @@ class BossShockwave:
         if self.direction < 0:
             frame_surf = pygame.transform.flip(frame_surf, True, False)
         surface.blit(frame_surf, (int(self.x - cam_x), int(self.y - cam_y)))
+
+class FallingIcicle:
+    def __init__(self, x, y):
+        self.x = float(x)
+        self.y = float(y)
+        self.start_y = float(y)
+        self.w = 16
+        self.h = 28
+        self.vy = 0.0
+        self.state = 'idle' # 'idle', 'shaking', 'falling', 'broken'
+        self.shake_timer = 0.0
+        self.broken = False
+
+    @property
+    def rect(self):
+        return pygame.Rect(int(self.x + 2), int(self.y + 4), self.w - 4, self.h - 4)
+
+    def update(self, dt, player, level):
+        if self.broken:
+            return
+
+        if self.state == 'idle':
+            # Trigger when player walks underneath within 48px
+            if abs(player.x - self.x) < 48 and player.y > self.y:
+                self.state = 'shaking'
+                self.shake_timer = 0.35
+
+        elif self.state == 'shaking':
+            self.shake_timer -= dt
+            if self.shake_timer <= 0:
+                self.state = 'falling'
+                self.vy = 60.0
+
+        elif self.state == 'falling':
+            self.vy += 650.0 * dt
+            self.y += self.vy * dt
+
+            # Hit player
+            if not player.is_dead and player.invulnerable_timer <= 0.0 and self.rect.colliderect(player.rect):
+                player.take_damage(1)
+                self.shatter()
+
+            # Hit ground
+            if level.check_tile_collision(self.rect) or self.y > level.height_in_pixels:
+                self.shatter()
+
+    def shatter(self):
+        if not self.broken:
+            self.broken = True
+            sound.play('break')
+            particles.add_hit_sparks(self.x + 8, self.y + 16, (180, 230, 255), 18)
+
+    def draw(self, surface, sprite_mgr, cam_x, cam_y):
+        if self.broken:
+            return
+        img = sprite_mgr.get('icicle')
+        if not img:
+            return
+        draw_x = self.x - cam_x
+        if self.state == 'shaking':
+            draw_x += math.sin(pygame.time.get_ticks() / 20) * 2.0
+        surface.blit(img, (int(draw_x), int(self.y - cam_y)))
+
+class IceSpikeHazard:
+    def __init__(self, x, y, direction=1, speed=160.0):
+        self.x = float(x)
+        self.y = float(y)
+        self.direction = direction
+        self.speed = speed
+        self.w = 30
+        self.h = 28
+        self.lifetime = 2.4
+        self.anim_timer = 0.0
+
+    @property
+    def rect(self):
+        return pygame.Rect(int(self.x + 4), int(self.y + 4), self.w - 8, self.h - 4)
+
+    def update(self, dt, player):
+        self.lifetime -= dt
+        self.anim_timer += dt * 8.0
+        self.x += self.direction * self.speed * dt
+
+        if not player.is_dead and player.invulnerable_timer <= 0.0:
+            if self.rect.colliderect(player.rect):
+                player.take_damage(1, knockback_dir=self.direction)
+
+    def draw(self, surface, sprite_mgr, cam_x, cam_y):
+        if self.lifetime <= 0:
+            return
+        img = sprite_mgr.get('ice_spike')
+        if not img:
+            return
+        frame_idx = int(self.anim_timer) % 4
+        sub_rect = pygame.Rect(frame_idx * 32, 0, 32, 32)
+        frame_surf = img.subsurface(sub_rect)
+        if self.direction < 0:
+            frame_surf = pygame.transform.flip(frame_surf, True, False)
+        surface.blit(frame_surf, (int(self.x - cam_x), int(self.y - cam_y)))

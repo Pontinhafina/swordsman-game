@@ -1,7 +1,7 @@
 @echo off
-title Swordsman: A Saga das 8 Fases (Python Native Edition)
+title Swordsman: A Saga das 10 Fases (Python Native Edition)
 echo ========================================================
-echo   INICIANDO SWORDSMAN: A SAGA DAS 8 FASES (Pygame-CE)
+echo   INICIANDO SWORDSMAN: A SAGA DAS 10 FASES (Pygame-CE)
 echo ========================================================
 echo.
 echo Controles:
