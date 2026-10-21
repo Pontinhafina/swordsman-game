@@ -1,5 +1,6 @@
 import pygame
 import os
+import sys
 
 class SpriteManager:
     def __init__(self):
@@ -7,14 +8,30 @@ class SpriteManager:
         self.load_assets()
 
     def load_image(self, rel_path):
-        if not os.path.exists(rel_path):
+        candidates = [
+            rel_path,
+            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), rel_path)
+        ]
+        if hasattr(sys, '_MEIPASS'):
+            candidates.insert(0, os.path.join(sys._MEIPASS, rel_path))
+
+        real_path = None
+        for c in candidates:
+            if os.path.exists(c):
+                real_path = c
+                break
+
+        if not real_path:
             print("Warning: Missing image:", rel_path)
             surf = pygame.Surface((32, 32), pygame.SRCALPHA)
             surf.fill((255, 0, 255))
             return surf
-        return pygame.image.load(rel_path).convert_alpha()
+        return pygame.image.load(real_path).convert_alpha()
 
     def load_assets(self):
+        # Title Background
+        self.images['title_bg'] = self.load_image('SPRITES/title_bg.png')
+
         # Backgrounds
         for i in range(1, 6):
             self.images[f'bg_{i}'] = self.load_image(f'SPRITES/PLATAFORMA/2 Background/Layers/{i}.png')

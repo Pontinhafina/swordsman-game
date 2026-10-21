@@ -479,36 +479,43 @@ class PlatformerGame:
             pygame.draw.rect(self.canvas, bar_color, (bx + 1, by + 1, int((bw - 2) * pct), bh - 2))
 
     def render_title(self):
+        title_bg = self.sprite_mgr.get('title_bg')
+        if title_bg:
+            self.canvas.blit(title_bg, (0, 0))
+            # Elegant dark vignette to make title & menu readable
+            overlay = pygame.Surface((INTERNAL_WIDTH, INTERNAL_HEIGHT), pygame.SRCALPHA)
+            overlay.fill((10, 15, 25, 65))
+            # Dark gradient at top for title
+            pygame.draw.rect(overlay, (5, 8, 15, 160), (0, 0, INTERNAL_WIDTH, 70))
+            # Dark gradient at bottom for menu & controls
+            pygame.draw.rect(overlay, (5, 8, 15, 190), (0, 165, INTERNAL_WIDTH, 105))
+            self.canvas.blit(overlay, (0, 0))
+        else:
+            self.canvas.fill(COLOR_BG)
+
+        # Title shadow & gold text
+        t1_shadow = self.font_title.render("SWORDSMAN: A SAGA DAS 10 FASES", False, (10, 10, 15))
         t1 = self.font_title.render("SWORDSMAN: A SAGA DAS 10 FASES", False, COLOR_GOLD)
-        self.canvas.blit(t1, (INTERNAL_WIDTH / 2 - t1.get_width() / 2, 35))
+        self.canvas.blit(t1_shadow, (INTERNAL_WIDTH / 2 - t1.get_width() / 2 + 2, 22))
+        self.canvas.blit(t1, (INTERNAL_WIDTH / 2 - t1.get_width() / 2, 20))
 
-        t2 = self.font.render("Campanha Completa de 10 Fases • Deserto, Gelo, Vulcão • 2 Chefões Épicos", False, (160, 185, 215))
-        self.canvas.blit(t2, (INTERNAL_WIDTH / 2 - t2.get_width() / 2, 65))
+        t2_shadow = self.font.render("Campanha Completa de 10 Fases • Deserto, Gelo & 2 Chefões Épicos", False, (0, 0, 0))
+        t2 = self.font.render("Campanha Completa de 10 Fases • Deserto, Gelo & 2 Chefões Épicos", False, (220, 235, 255))
+        self.canvas.blit(t2_shadow, (INTERNAL_WIDTH / 2 - t2.get_width() / 2 + 1, 51))
+        self.canvas.blit(t2, (INTERNAL_WIDTH / 2 - t2.get_width() / 2, 50))
 
-        # Hero preview
-        h1 = self.sprite_mgr.get('hero1_idle')
-        if h1:
-            frame = h1.subsurface(pygame.Rect(0, 128, 64, 64))
-            self.canvas.blit(frame, (INTERNAL_WIDTH / 2 - 90, 88))
-
-        owl = self.sprite_mgr.get('coruja')
-        if owl:
-            o_frame = owl.subsurface(pygame.Rect(0, 0, 32, 32))
-            self.canvas.blit(o_frame, (INTERNAL_WIDTH / 2 - 16, 110))
-
-        boss = self.sprite_mgr.get('frost_boss')
-        if boss:
-            b_frame = boss.subsurface(pygame.Rect(0, 0, 64, 64))
-            self.canvas.blit(b_frame, (INTERNAL_WIDTH / 2 + 30, 88))
-
+        # Start prompt with pulsing green/gold
         if int(pygame.time.get_ticks() / 450) % 2 == 0:
-            prompt = self.font_large.render("PRESSIONE [ENTER] OU [ESPAÇO] PARA JOGAR", False, COLOR_GREEN)
-            self.canvas.blit(prompt, (INTERNAL_WIDTH / 2 - prompt.get_width() / 2, 175))
+            prompt_sh = self.font_large.render("PRESSIONE [ENTER] OU [ESPAÇO] PARA JOGAR", False, (0, 0, 0))
+            prompt = self.font_large.render("PRESSIONE [ENTER] OU [ESPAÇO] PARA JOGAR", False, (80, 255, 120))
+            self.canvas.blit(prompt_sh, (INTERNAL_WIDTH / 2 - prompt.get_width() / 2 + 1, 181))
+            self.canvas.blit(prompt, (INTERNAL_WIDTH / 2 - prompt.get_width() / 2, 180))
 
+        # Controls & Tips
         h1 = self.font.render("[A/D] Mover  •  [ESPAÇO] Pular  •  [SHIFT/K] Dash  •  [J/Z] Cortar", False, COLOR_WHITE)
-        h2 = self.font.render("[S no ar] Pogo Strike  •  [M] Música Chiptune  •  [F] Tela Cheia", False, (140, 165, 195))
-        self.canvas.blit(h1, (INTERNAL_WIDTH / 2 - h1.get_width() / 2, 215))
-        self.canvas.blit(h2, (INTERNAL_WIDTH / 2 - h2.get_width() / 2, 235))
+        h2 = self.font.render("[S no ar] Pogo Strike  •  [M] Música Chiptune  •  [F] Tela Cheia", False, (160, 200, 240))
+        self.canvas.blit(h1, (INTERNAL_WIDTH / 2 - h1.get_width() / 2, 218))
+        self.canvas.blit(h2, (INTERNAL_WIDTH / 2 - h2.get_width() / 2, 238))
 
     def render_stage_clear(self):
         overlay = pygame.Surface((INTERNAL_WIDTH, INTERNAL_HEIGHT), pygame.SRCALPHA)

@@ -136,7 +136,7 @@ class Level:
         # =========================================================================
         if stage_idx == 1:
             self.player_start = (64, 11 * 32 - 26)
-            self.owls.append(OwlHelper(3 * 32, 11 * 32 - 32, "Ola guerreiro!\nUse [A/D] andar, [ESPACO] pular\n[J] cortar correndo!\nSegure [SHIFT] para dar DASH!"))
+            self.owls.append(OwlHelper(3 * 32, 11 * 32 - 32, "Ola guerreiro!\nUse [A/D] andar, [ESPACO] pular\n[J] cortar correndo!\n[SHIFT] DASH e [S+J] Pogo Strike!"))
 
             create_ground(0, 11, 16, 5)
             self.enemies.append(OrcEnemy(11 * 32, 11 * 32 - 28, 40, 'orc1'))
@@ -185,7 +185,6 @@ class Level:
         # =========================================================================
         elif stage_idx == 2:
             self.player_start = (64, 11 * 32 - 26)
-            self.owls.append(OwlHelper(8 * 32, 11 * 32 - 32, "Cuidado com a Serra!\nUse [SHIFT] DASH para passar\ninvulneravel ou pule por cima!"))
 
             create_ground(0, 11, 14, 5)
             self.enemies.append(OrcEnemy(9 * 32, 11 * 32 - 28, 45, 'orc1'))
@@ -233,7 +232,6 @@ class Level:
         # =========================================================================
         elif stage_idx == 3:
             self.player_start = (64, 10 * 32 - 26)
-            self.owls.append(OwlHelper(6 * 32, 10 * 32 - 32, "Voce pode saltar na parede!\nDeslize na pedra e aperte\n[ESPACO] para subir o canyon!"))
 
             create_ground(0, 10, 14, 6)
             self.enemies.append(OrcEnemy(8 * 32, 10 * 32 - 28, 45, 'orc1'))
@@ -280,7 +278,6 @@ class Level:
         # =========================================================================
         elif stage_idx == 4:
             self.player_start = (64, 11 * 32 - 26)
-            self.owls.append(OwlHelper(6 * 32, 11 * 32 - 32, "Bem-vindo ao Deserto das Areias!\nCuidado com os escorpioes venenosos\ne morcegos que atacam do ceu!"))
 
             create_ground(0, 11, 16, 5)
             self.enemies.append(ScorpionEnemy(10 * 32, 11 * 32 - 18, 50))
@@ -334,7 +331,6 @@ class Level:
         # =========================================================================
         elif stage_idx == 5:
             self.player_start = (64, 10 * 32 - 26)
-            self.owls.append(OwlHelper(6 * 32, 10 * 32 - 32, "O Templo Antigo das Areias!\nQuique na cabeca dos morcegos (Pogo)\npara alcancar plataformas elevadas!"))
 
             create_ground(0, 10, 14, 6)
             self.enemies.append(ScorpionEnemy(9 * 32, 10 * 32 - 18, 40))
@@ -379,7 +375,6 @@ class Level:
         # =========================================================================
         elif stage_idx == 6:
             self.player_start = (64, 11 * 32 - 26)
-            self.owls.append(OwlHelper(6 * 32, 11 * 32 - 32, "As Catacumbas guardam segredos!\nGolpeie paredes rachadas para abrir\nsalas secretas com tesouros!"))
 
             create_ground(0, 11, 15, 5)
             self.enemies.append(OrcEnemy(10 * 32, 11 * 32 - 28, 45, 'orc1'))
@@ -424,7 +419,6 @@ class Level:
         # =========================================================================
         elif stage_idx == 7:
             self.player_start = (64, 10 * 32 - 26)
-            self.owls.append(OwlHelper(6 * 32, 10 * 32 - 32, "As Cavernas de Gelo sao perigosas!\nCuidado com estalactites caindo\ndo teto! Use o DASH para escapar!"))
 
             create_ground(0, 10, 14, 6)
             self.enemies.append(BatEnemy(10 * 32, 5 * 32, 60))
@@ -471,7 +465,6 @@ class Level:
         # =========================================================================
         elif stage_idx == 8:
             self.player_start = (64, 10 * 32 - 26)
-            self.owls.append(OwlHelper(6 * 32, 10 * 32 - 32, "O TITA DE GELO REINA AQUI!\nEle esmaga o chao com seu martelo!\nPule nas plataformas e esquive\ndos picos de gelo rastejantes!"))
 
             create_ground(0, 10, 14, 6)
 
@@ -516,7 +509,6 @@ class Level:
         # =========================================================================
         elif stage_idx == 9:
             self.player_start = (64, 11 * 32 - 26)
-            self.owls.append(OwlHelper(6 * 32, 11 * 32 - 32, "A Fundicao e a forja do General!\nMantenha a calma, use seus golpes\ne prepare-se para o Confronto Final!"))
 
             create_ground(0, 11, 14, 5)
             self.enemies.append(OrcEnemy(9 * 32, 11 * 32 - 28, 45, 'orc2'))
@@ -561,7 +553,6 @@ class Level:
         # =========================================================================
         elif stage_idx == 10:
             self.player_start = (64, 10 * 32 - 26)
-            self.owls.append(OwlHelper(6 * 32, 10 * 32 - 32, "A BATALHA FINAL DO REINO!\nO General Orc te espera no trono!\nPule para desviar dos choques\ne salve todas as terras!"))
 
             create_ground(0, 10, 14, 6)
             self.enemies.append(OrcEnemy(9 * 32, 10 * 32 - 28, 45, 'orc2'))
