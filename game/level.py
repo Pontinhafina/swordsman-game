@@ -447,6 +447,13 @@ class Level:
     def is_tile_solid(self, tile_id):
         return tile_id in [1, 2, 3, 11, 12, 13, 21, 22, 23]
 
+    def is_tile_solid_at_pixel(self, px, py):
+        tx = int(px // self.tile_size)
+        ty = int(py // self.tile_size)
+        if 0 <= tx < self.width_in_tiles and 0 <= ty < self.height_in_tiles:
+            return self.is_tile_solid(self.tiles[ty][tx])
+        return False
+
     def check_tile_collision(self, rect):
         left_t = max(0, rect.left // self.tile_size)
         right_t = min(self.width_in_tiles - 1, rect.right // self.tile_size)
