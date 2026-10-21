@@ -1,89 +1,79 @@
-# ⚔️ Swordsman: Guerra Orc (Native Python Platformer)
+# ⚔️ Swordsman: A Saga das 5 Fases (Python Native Edition)
 
-Um jogo de plataforma e ação 2D desenvolvido em **Python 3** com a biblioteca **Pygame-CE**, utilizando os sprites originais de alta fidelidade da pasta `SPRITES/`.
-
-O jogo incorpora conceitos modernos de game design pesquisados em títulos renomados como *Hollow Knight*, *Shovel Knight* e a filosofia japonesa de progressão de fases *Kishōtenketsu*.
+Um jogo de plataforma e ação 2D de ritmo acelerado desenvolvido em **Python 3** com **Pygame-CE**, inspirado diretamente nas obras-primas do gênero de plataforma:
+* **Hollow Knight & Shovel Knight:** Mecânica de *Pogo Jump* (quicar na cabeça de inimigos, espinhos e lâminas de serra), *Hitstop / Micro-Freeze* de 0.06s para impacto cortante, e *Screen Shake*.
+* **Dead Cells:** Movimentação ágil com *Dash* horizontal com invencibilidade momentânea, fantasmas de rastro de movimento e corte correndo (*Run Attack*).
+* **Castlevania & Metroidvania:** Paredes secretas rachadas quebráveis com espada (*Cracked Walls*), bifurcações de rotas (alta/baixa), tochas de *Checkpoint* que curam e salvam o renascimento, e baús com upgrades de armadura (**NV.1 Padrão → NV.2 Ferro → NV.3 Ouro**).
+* **Wonder Boy & Celeste:** Salto na parede (*Wall Slide* e *Wall Jump*), plataformas móveis verticais e horizontais (*Moving Platforms*), e controle micro-ajustável de salto variável com flutuação de ápice.
 
 ---
 
 ## 🎮 Como Jogar (1 Clique no Windows)
 
-Basta dar um duplo-clique no arquivo:
+Dê um duplo clique no arquivo:
 👉 **[`jogar_python.bat`](file:///f:/Coisas%20do%20David/UM%20JOGO%20AI/jogar_python.bat)**
 
-Ou, se preferir executar pelo terminal / prompt de comando:
+Ou execute pelo terminal:
 ```bash
 python main.py
 ```
 
 ---
 
-## 🕹️ Controles
+## 🕹️ Controles Completos
 
 | Ação | Teclado | Controle (Xbox / PlayStation / USB) |
 |---|---|---|
 | **Mover Esquerda / Direita** | `A` / `D` ou `←` / `→` | Analógico Esquerdo / D-Pad |
-| **Pular** | `W`, `Espaço` ou `C` | Botão Sul (`A` no Xbox, `X` no PS) |
-| **Pogo Attack (Ataque para Baixo)** | Segurar `S` ou `↓` no ar | Analógico / D-Pad para Baixo no ar |
-| **Atacar com Espada** | `J` ou `X` | Botão Oeste (`X` no Xbox, `Quadrado` no PS) |
-| **Interagir / Abrir Baú** | `E` | Botão Leste (`B` no Xbox, `Círculo` no PS) |
-| **Tela Cheia (Full Screen)** | `F` | - |
+| **Pular (Segure para alto, solte para curto)** | `Espaço`, `W` ou `↑` | Botão Sul (`A` no Xbox, `X` no PS) |
+| **Dash (Arrancada Rápida com Invulnerabilidade)** | `Shift Esquerdo`, `K` ou `C` | Botão Leste (`B` no Xbox) ou Gatilho `RB` |
+| **Atacar com Espada (Corta Correndo!)** | `J` ou `Z` | Botão Oeste (`X` no Xbox, `Quadrado` no PS) |
+| **Pogo Attack (Golpe para Baixo no Ar)** | `S` ou `↓` no ar + Ataque | Analógico/D-Pad para baixo no ar + Ataque |
+| **Wall Slide & Wall Jump** | Pressione na parede no ar + Pulo | Analógico na parede + Botão de Pulo |
+| **Interagir / Abrir Baú** | `E` | Botão Norte (`Y` no Xbox, `Triângulo` no PS) |
+| **Alternar Tela Cheia (Fullscreen)** | `F` | - |
 | **Pausar / Despausar** | `ESC` ou `P` | Botão Start |
-| **Reiniciar Fase** | `R` | - |
+| **Reiniciar Fase Atual** | `R` | - |
 
 ---
 
-## 🧠 Referências & Mecânicas de Game Design Implementadas
+## 🎨 Novos Sprites Criados (Pixel Art Original)
 
-### 1. Sistema de Combate "Juicy" (Inspirado em *Hollow Knight* e *Shovel Knight*)
-* **Downthrust Pogo Jump:** Ao atacar no ar segurando para baixo (`S` ou `↓`), o herói executa um golpe para baixo que salta sobre a cabeça dos Orcs, causando dano contínuo e ganhando impulso vertical.
-* **Hitstop / Impact Freeze:** A cada golpe de espada que acerta um inimigo ou chefe, o jogo congela por ~0.05 segundos para transmitir sensação de impacto e peso cortante.
-* **Screen Shake Procedural:** Tremores dinâmicos de câmera proporcionais ao poder do impacto e ao rugido do chefão.
-* **Coyote Time & Jump Buffering:** Janela de tolerância de 120ms para pular mesmo milissegundos após sair da beirada de uma plataforma e buffer de input antes de tocar no chão.
-
-### 2. Design das 5 Fases (Filosofia *Kishōtenketsu*)
-As fases foram estruturadas em 4 atos fundamentais:
-1. **Fase 1: As Fronteiras da Floresta (Ki - Introdução Segura)**
-   - Plataformas baixas, espaçamento seguro de 1 a 2 blocos de elevação, introdução dos Orcs Batedores e primeiras moedas.
-2. **Fase 2: As Ruínas do Acampamento (Shō - Desenvolvimento)**
-   - Introdução de plataformas semissólidas (atravessáveis por baixo), baú com armadura Nível 2 e Orcs Guerreiros patrulhando.
-3. **Fase 3: O Pântano da Névoa (Ten - O Desafio do Pogo)**
-   - Ilhas isoladas e lagos tóxicos onde o jogador precisa usar a mecânica de pogo jump sobre inimigos para atravessar abismos maiores.
-4. **Fase 4: A Fortaleza de Pedra (Ten - Desafio de Chaves & Runas)**
-   - Exploração vertical, chave secreta e o Portão Rúnico ancestral que protege o caminho para o covil do chefe.
-5. **Fase 5: O Covil do General Orc (Ketsu - Clímax / Boss Fight)**
-   - Batalha contra o General Orc de 2 fases: golpes com screen shake, enrage furioso ao chegar a 50% de HP e invocação de batedores de apoio.
-
-### 3. Motor de Áudio Procedural Sintetizado (Zero Dependências Externas)
-* Todos os efeitos sonoros (espada, pulo, pogo, moedas, abertura de baú, impacto, rugido e passos) são gerados em tempo real através de síntese matemática via `numpy` e `pygame.mixer.Sound`. Não há arquivos de áudio faltando ou corrompidos.
+Foram gerados novos spritesheets respeitando a paleta e a resolução de 32x32 do tileset:
+1. **Espinhos de Aço (`spikes.png`):** Dano ao encostar, mas podem ser usados para saltar com o golpe de Pogo!
+2. **Lâminas de Serra Giratórias (`saw_blade.png`):** Armadilhas rotativas animadas que patrulham pontes e desfiladeiros.
+3. **Plataformas Móveis Flutuantes (`moving_plat.png`):** Pranchas de madeira reforçadas com ferro que se movem em eixos X e Y transportando o jogador.
+4. **Paredes Secretas Rachadas (`cracked_wall.png`):** Blocos de pedra com fissuras que quebram com golpes de espada, revelando câmaras secretas.
+5. **Tochas de Checkpoint (`checkpoint_torch.png`):** Totens com chamas animadas que curam o herói ao passar e salvam o ponto de renascimento.
+6. **Frascos de Poção de Vida (`potion.png`):** Elixir vermelho brilhante que recupera corações de vida.
+7. **Gemas de Relíquia (`gem.png`):** Esmeraldas e rubis lapidados com brilho animado que concedem pontuações bônus.
+8. **Efeitos Visuais de Corte (`slash_vfx.png`):** Arcos de energia em meia-lua cortante com brilho ciano.
+9. **Animação de Corte Correndo (`Swordsman_lvlX_Run_Attack`):** Agora o personagem ataca sem travar os pés no chão!
 
 ---
 
-## 📂 Estrutura do Código Python
+## 🗺️ As 5 Fases Recriadas
 
-```
-UM JOGO AI/
-├── main.py                  # Loop principal do jogo, máquina de estados, câmera e HUD
-├── jogar_python.bat         # Executável em lote (1 clique)
-├── game/
-│   ├── settings.py          # Constantes de física, resolução interna e controles
-│   ├── sprites.py           # Loader com corte automático de spritesheets e cache
-│   ├── player.py            # Herói, física, pulo, pogo, armaduras Lv1/Lv2/Lv3
-│   ├── enemy.py             # Inteligência Artificial dos Orcs e Chefe
-│   ├── level.py             # Design das 5 fases, colisões e parallax
-│   ├── objects.py           # Moedas animadas, baús de upgrade, chaves, portões
-│   ├── sound.py             # Sintetizador procedural de áudio 8-bit
-│   └── particles.py         # Partículas de poeira, faíscas, dano flutuante e screen shake
-└── SPRITES/                 # Spritesheets originais do projeto
-```
+1. **Fase 1: As Fronteiras da Floresta & Torre de Vigia**
+   - Poço de espinhos inicial, câmara secreta com parede rachada contendo Poção de Vida e Gema, escalada vertical na torre de vigia com wall jump para o baú da **Armadura Nível 2 de Ferro**, e plataforma móvel sobre o desfiladeiro.
+2. **Fase 2: As Ruínas do Entardecer & Lâminas de Serra**
+   - Rota alta (plataformas sobre espinhos) vs rota baixa (combate direto), armadilha de serra giratória em patrulha, chave dourada no topo da torre, Tocha de Checkpoint e o Portão Rúnico ancestral.
+3. **Fase 3: O Desfiladeiro dos Salgueiros & Escalada Vertical**
+   - Elevador móvel vertical no abismo, fenda estreita com serra vertical exigindo wall slide alternado, plataformas móveis sincronizadas e câmara secreta na copa das árvores.
+4. **Fase 4: O Pântano da Lua de Sangue & Castelo Interior**
+   - Corredores do castelo com serras móveis, armaria secreta atrás de parede quebrável guardando a **Armadura Nível 3 do Cavaleiro Dourado**, travessia de plataformas sobre o lago de espinhos, chave secreta e grande portão rúnico.
+5. **Fase 5: A Fortaleza do General Orc (Clímax / Arena)**
+   - Ponte fortificada com serras, santuário pré-batalha com Tocha de Checkpoint e Poções, e a **Arena do Trono** em múltiplos andares onde o jogador pode pular nos patamares elevados para desviar dos tremores de terra e golpear o General Orc em suas duas fases furiosas!
 
 ---
 
 ## 🌐 Salvar no GitHub
 
-Para subir todas as alterações para o seu repositório remoto no GitHub:
-```bash
+Configuração do usuário do Git:
+* Email: `davidbrunopatriota205@gmail.com`
+
+Para subir o código para o seu repositório remoto no GitHub:
+```powershell
 git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-git branch -M main
 git push -u origin main
 ```

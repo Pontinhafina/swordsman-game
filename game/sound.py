@@ -61,6 +61,11 @@ class SoundManager:
         self.sounds['hurt'] = self._generate_tone(160, 0.2, 'sawtooth', sweep_to=60, volume=0.4)
         self.sounds['death'] = self._generate_tone(320, 0.4, 'sawtooth', sweep_to=80, volume=0.45)
         self.sounds['victory'] = self._generate_tone(523, 0.35, 'triangle', sweep_to=784, volume=0.4)
+        self.sounds['dash'] = self._generate_noise(0.14, volume=0.35)
+        self.sounds['wall_slide'] = self._generate_noise(0.06, volume=0.15)
+        self.sounds['potion'] = self._generate_tone(440, 0.22, 'sine', sweep_to=880, volume=0.35)
+        self.sounds['break'] = self._generate_noise(0.18, volume=0.45)
+        self.sounds['checkpoint'] = self._generate_tone(440, 0.3, 'sine', sweep_to=1174, volume=0.35)
 
     def play(self, name):
         if not self.enabled:

@@ -1,14 +1,17 @@
 @echo off
-title Swordsman: Guerra Orc (Python Native Edition)
+title Swordsman: A Saga das 5 Fases (Python Native Edition)
 echo ========================================================
-echo   INICIANDO SWORDSMAN: GUERRA ORC (Pygame-CE)
+echo   INICIANDO SWORDSMAN: A SAGA DAS 5 FASES (Pygame-CE)
 echo ========================================================
 echo.
 echo Controles:
 echo   [A] / [D] ou Setas : Mover
-echo   [W] / Espaco / C   : Pular
-echo   [S] no ar          : Pogo Attack (Golpe para Baixo)
-echo   [J] / X            : Atacar com a Espada
+echo   [ESPACO] / [W]     : Pular (Solte rapido para pulo curto)
+echo   [SHIFT] / [K]      : Dash (Arrancada rapida com invencibilidade)
+echo   [S no ar] + Ataque : Pogo Attack (Pula sobre inimigos, espinhos e serras!)
+echo   [J] / [Z]          : Atacar com a Espada (Corta correndo!)
+echo   [Deslizar na Parede] + Pulo : Wall Jump!
+echo   [E]                : Abrir Baus
 echo   [F]                : Alternar Tela Cheia
 echo   [ESC] / [P]        : Pausar
 echo.

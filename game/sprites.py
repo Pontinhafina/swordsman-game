@@ -27,6 +27,7 @@ class SpriteManager:
             path_lvl = f'SPRITES/HEROI/PNG/Swordsman_lvl{lvl}/Without_shadow/'
             self.images[f'hero{lvl}_idle'] = self.load_image(path_lvl + f'Swordsman_lvl{lvl}_Idle_without_shadow.png')
             self.images[f'hero{lvl}_run'] = self.load_image(path_lvl + f'Swordsman_lvl{lvl}_Run_without_shadow.png')
+            self.images[f'hero{lvl}_run_attack'] = self.load_image(path_lvl + f'Swordsman_lvl{lvl}_Run_Attack_without_shadow.png')
             self.images[f'hero{lvl}_attack'] = self.load_image(path_lvl + f'Swordsman_lvl{lvl}_attack_without_shadow.png')
             self.images[f'hero{lvl}_hurt'] = self.load_image(path_lvl + f'Swordsman_lvl{lvl}_Hurt_without_shadow.png')
             self.images[f'hero{lvl}_death'] = self.load_image(path_lvl + f'Swordsman_lvl{lvl}_Death_without_shadow.png')
@@ -46,6 +47,14 @@ class SpriteManager:
         self.images['flag'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/Flag.png')
         self.images['key'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/Key.png')
         self.images['rune'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/Rune.png')
+        self.images['spikes'] = self.load_image('SPRITES/PLATAFORMA/3 Objects/Hazards/spikes.png')
+        self.images['saw_blade'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/saw_blade.png')
+        self.images['moving_plat'] = self.load_image('SPRITES/PLATAFORMA/3 Objects/Hazards/moving_plat.png')
+        self.images['cracked_wall'] = self.load_image('SPRITES/PLATAFORMA/3 Objects/Hazards/cracked_wall.png')
+        self.images['checkpoint_torch'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/checkpoint_torch.png')
+        self.images['potion'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/potion.png')
+        self.images['gem'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/gem.png')
+        self.images['slash_vfx'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/slash_vfx.png')
 
         # Props
         self.images['tree_1'] = self.load_image('SPRITES/PLATAFORMA/3 Objects/Trees/1.png')
