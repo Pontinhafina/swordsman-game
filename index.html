@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Swordsman: Guerra na Floresta - Jogo de Plataforma 2D</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="top-bar">
+            <div class="game-title">⚔️ SWORDSMAN: GUERRA NA FLORESTA</div>
+            <div class="top-buttons">
+                <button id="btnAudio" class="btn" title="Ativar/Desativar Som">🔊 Som</button>
+                <button id="btnFullscreen" class="btn" title="Tela Cheia">⛶ Tela Cheia</button>
+            </div>
+        </div>
+
+        <div class="canvas-container" id="canvasContainer">
+            <canvas id="gameCanvas"></canvas>
+
+            <!-- Virtual On-screen Controls (para mobile / touch) -->
+            <div class="touch-controls" id="touchControls">
+                <div class="touch-cluster">
+                    <button class="touch-btn" id="tLeft">◀</button>
+                    <button class="touch-btn" id="tRight">▶</button>
+                </div>
+                <div class="touch-cluster">
+                    <button class="touch-btn attack" id="tAttack">⚔️</button>
+                    <button class="touch-btn" id="tJump">⬆</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions-panel">
+            <div><span class="key-badge">A</span> / <span class="key-badge">D</span> ou <span class="key-badge">←</span> <span class="key-badge">→</span> Andar</div>
+            <div><span class="key-badge">ESPAÇO</span> ou <span class="key-badge">W</span> / <span class="key-badge">↑</span> Pular</div>
+            <div><span class="key-badge">Z</span> ou <span class="key-badge">J</span> Atacar com Espada</div>
+            <div><span class="key-badge">E</span> Abrir Baú</div>
+            <div><span class="key-badge">M</span> Música On/Off</div>
+            <div><span class="key-badge">ESC</span> Pausar</div>
+            <div><span class="key-badge">F2</span> Editor de Fases</div>
+        </div>
+    </div>
+
+    <!-- Game Scripts -->
+    <script src="js/audio.js"></script>
+    <script src="js/physics.js"></script>
+    <script src="js/sprites.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/enemy.js"></script>
+    <script src="js/objects.js"></script>
+    <script src="js/level.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/game.js"></script>
+
+    <!-- UI Helpers -->
+    <script>
+        // Fullscreen Toggle
+        const btnFullscreen = document.getElementById('btnFullscreen');
+        const container = document.getElementById('canvasContainer');
+        btnFullscreen.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(err => alert(`Erro ao abrir tela cheia: ${err.message}`));
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // Audio Button
+        const btnAudio = document.getElementById('btnAudio');
+        btnAudio.addEventListener('click', () => {
+            if (window.sound) {
+                window.sound.init();
+                const playing = window.sound.toggleBgm();
+                btnAudio.textContent = playing ? '🔊 Som: ON' : '🔇 Som: OFF';
+                if (window.gameInstance) {
+                    window.gameInstance.bgmEnabled = playing;
+                }
+            }
+        });
+
+        // Touch virtual buttons binding
+        const bindTouch = (id, onDown, onUp) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const start = (e) => {
+                e.preventDefault();
+                window.sound.init();
+                if (window.gameInstance) onDown();
+            };
+            const end = (e) => {
+                e.preventDefault();
+                if (window.gameInstance) onUp();
+            };
+            el.addEventListener('pointerdown', start);
+            el.addEventListener('pointerup', end);
+            el.addEventListener('pointercancel', end);
+        };
+
+        bindTouch('tLeft', 
+            () => { window.gameInstance.input.left = true; },
+            () => { window.gameInstance.input.left = false; }
+        );
+        bindTouch('tRight', 
+            () => { window.gameInstance.input.right = true; },
+            () => { window.gameInstance.input.right = false; }
+        );
+        bindTouch('tJump', 
+            () => { window.gameInstance.input.jump = true; window.gameInstance.input.jumpPressed = true; },
+            () => { window.gameInstance.input.jump = false; }
+        );
+        bindTouch('tAttack', 
+            () => { window.gameInstance.input.attackPressed = true; },
+            () => {}
+        );
+    </script>
+</body>
+</html>

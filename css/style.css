@@ -1,0 +1,369 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    background-color: #0b0e14;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    padding: 10px;
+}
+
+.game-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1024px;
+    width: 100%;
+}
+
+.canvas-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 80vh;
+    background-color: #000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(78, 204, 163, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 3px solid #2d3748;
+}
+
+canvas#gameCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* Header & Controls bar */
+.top-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 0 4px;
+}
+
+.game-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #4ecca3;
+    letter-spacing: 1px;
+}
+
+.top-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    background: #1a202c;
+    color: #cbd5e0;
+    border: 1px solid #4a5568;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn:hover {
+    background: #2d3748;
+    color: #fff;
+    border-color: #4ecca3;
+}
+
+.btn-primary {
+    background: #2b6cb0;
+    color: #fff;
+    border-color: #4299e1;
+    font-weight: bold;
+}
+.btn-primary:hover {
+    background: #3182ce;
+    border-color: #63b3ed;
+}
+
+.btn-danger {
+    background: #742a2a;
+    color: #feb2b2;
+    border-color: #9b2c2c;
+}
+.btn-danger:hover {
+    background: #9b2c2c;
+    color: #fff;
+}
+
+/* ========================================================
+   EDITOR TOOLBAR STYLING (MARIO MAKER RETRO DESIGN)
+   ======================================================== */
+.editor-toolbar {
+    margin-top: 10px;
+    width: 100%;
+    background: #131a26;
+    border: 2px solid #4ecca3;
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #2d3748;
+    padding-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.editor-title {
+    font-weight: bold;
+    color: #4ecca3;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+.editor-main-btns {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.editor-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #232d3f;
+    padding-bottom: 8px;
+}
+
+.tab-btn {
+    background: #1a202c;
+    color: #a0aec0;
+    border: 1px solid #2d3748;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    color: #fff;
+    border-color: #4ecca3;
+}
+
+.tab-btn.active {
+    background: #4ecca3;
+    color: #0b0e14;
+    border-color: #4ecca3;
+    font-weight: bold;
+}
+
+.palette-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    background: #0f141d;
+    padding: 8px;
+    border-radius: 6px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.item-btn {
+    background: #1e293b;
+    color: #e2e8f0;
+    border: 1px solid #334155;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.item-btn:hover {
+    background: #334155;
+    border-color: #64748b;
+}
+
+.item-btn.active {
+    background: #2563eb;
+    color: #fff;
+    border-color: #60a5fa;
+    box-shadow: 0 0 8px rgba(96, 165, 250, 0.5);
+    font-weight: bold;
+}
+
+.editor-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #718096;
+    border-top: 1px solid #232d3f;
+    padding-top: 6px;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+#editorCoords {
+    color: #ffd700;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+/* Modal for JSON import/export */
+.editor-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #1a202c;
+    border: 2px solid #4ecca3;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 600px;
+    width: 90%;
+    color: #e2e8f0;
+}
+
+.modal-content h3 {
+    color: #4ecca3;
+    margin-bottom: 8px;
+}
+
+.modal-content p {
+    font-size: 0.85rem;
+    color: #a0aec0;
+    margin-bottom: 12px;
+}
+
+.modal-content textarea {
+    width: 100%;
+    background: #0f141d;
+    color: #68d391;
+    font-family: monospace;
+    font-size: 0.8rem;
+    border: 1px solid #4a5568;
+    border-radius: 4px;
+    padding: 10px;
+    resize: vertical;
+    margin-bottom: 12px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.instructions-panel {
+    margin-top: 12px;
+    width: 100%;
+    background: #1a202c;
+    border: 1px solid #2d3748;
+    border-radius: 6px;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: #a0aec0;
+}
+
+.key-badge {
+    background: #2d3748;
+    color: #ffd700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-family: monospace;
+    border: 1px solid #4a5568;
+    box-shadow: 0 2px 0 #1a202c;
+}
+
+/* Touch controls for mobile / tablet */
+.touch-controls {
+    display: none;
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    width: 100%;
+    padding: 0 16px;
+    pointer-events: none;
+    justify-content: space-between;
+}
+
+@media (pointer: coarse), (max-width: 800px) {
+    .touch-controls {
+        display: flex;
+    }
+}
+
+.touch-cluster {
+    display: flex;
+    gap: 12px;
+    pointer-events: auto;
+}
+
+.touch-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(30, 41, 59, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    touch-action: manipulation;
+}
+
+.touch-btn:active {
+    background: rgba(78, 204, 163, 0.8);
+    transform: scale(0.92);
+}
+
+.touch-btn.attack {
+    background: rgba(229, 62, 62, 0.7);
+}

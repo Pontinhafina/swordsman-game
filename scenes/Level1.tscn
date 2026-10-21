@@ -1,0 +1,402 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/ParallaxBackground.tscn" id="1_bg"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/Orc.tscn" id="3_orc"]
+[ext_resource type="PackedScene" path="res://scenes/Coin.tscn" id="4_coin"]
+[ext_resource type="PackedScene" path="res://scenes/Chest.tscn" id="5_chest"]
+[ext_resource type="PackedScene" path="res://scenes/Flag.tscn" id="6_flag"]
+[ext_resource type="Texture2D" path="res://SPRITES/PLATAFORMA/1 Tiles/Tile_02.png" id="7_tile_grass"]
+[ext_resource type="Texture2D" path="res://SPRITES/PLATAFORMA/1 Tiles/Tile_08.png" id="8_tile_bridge"]
+[ext_resource type="Texture2D" path="res://SPRITES/PLATAFORMA/3 Objects/Trees/1.png" id="9_tree1"]
+[ext_resource type="Texture2D" path="res://SPRITES/PLATAFORMA/3 Objects/Stones/1.png" id="10_stone1"]
+[ext_resource type="Texture2D" path="res://SPRITES/PLATAFORMA/3 Objects/Willows/1.png" id="11_willow"]
+
+[node name="Level1" type="Node2D"]
+
+[node name="ParallaxBackground" parent="." instance=ExtResource("1_bg")]
+
+[node name="Props" type="Node2D" parent="."]
+
+[node name="Tree1" type="Sprite2D" parent="Props"]
+position = Vector2(96, 250)
+texture = ExtResource("9_tree1")
+
+[node name="Stone1" type="Sprite2D" parent="Props"]
+position = Vector2(320, 320)
+texture = ExtResource("10_stone1")
+
+[node name="Willow" type="Sprite2D" parent="Props"]
+position = Vector2(670, 220)
+texture = ExtResource("11_willow")
+
+[node name="Platforms" type="Node2D" parent="."]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_box_Ground1"]
+size = Vector2(640, 128)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_box_Step1"]
+size = Vector2(96, 160)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_box_Terrace"]
+size = Vector2(384, 192)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_box_FloatPlat"]
+size = Vector2(128, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_box_Fortress"]
+size = Vector2(448, 224)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_box_GoalPlat"]
+size = Vector2(416, 160)
+
+[node name="Ground1" type="StaticBody2D" parent="Platforms"]
+position = Vector2(320, 416)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Ground1"]
+shape = SubResource("RectangleShape2D_box_Ground1")
+
+[node name="Step1" type="StaticBody2D" parent="Platforms"]
+position = Vector2(672, 400)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Step1"]
+shape = SubResource("RectangleShape2D_box_Step1")
+
+[node name="Terrace" type="StaticBody2D" parent="Platforms"]
+position = Vector2(912, 384)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Terrace"]
+shape = SubResource("RectangleShape2D_box_Terrace")
+
+[node name="FloatPlat" type="StaticBody2D" parent="Platforms"]
+position = Vector2(1200, 264)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/FloatPlat"]
+shape = SubResource("RectangleShape2D_box_FloatPlat")
+one_way_collision = true
+
+[node name="Fortress" type="StaticBody2D" parent="Platforms"]
+position = Vector2(1504, 368)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Fortress"]
+shape = SubResource("RectangleShape2D_box_Fortress")
+
+[node name="GoalPlat" type="StaticBody2D" parent="Platforms"]
+position = Vector2(2048, 400)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/GoalPlat"]
+shape = SubResource("RectangleShape2D_box_GoalPlat")
+
+[node name="TileSprites" type="Node2D" parent="."]
+
+[node name="T_0" type="Sprite2D" parent="TileSprites"]
+position = Vector2(16, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_1" type="Sprite2D" parent="TileSprites"]
+position = Vector2(48, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_2" type="Sprite2D" parent="TileSprites"]
+position = Vector2(80, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_3" type="Sprite2D" parent="TileSprites"]
+position = Vector2(112, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_4" type="Sprite2D" parent="TileSprites"]
+position = Vector2(144, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_5" type="Sprite2D" parent="TileSprites"]
+position = Vector2(176, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_6" type="Sprite2D" parent="TileSprites"]
+position = Vector2(208, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_7" type="Sprite2D" parent="TileSprites"]
+position = Vector2(240, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_8" type="Sprite2D" parent="TileSprites"]
+position = Vector2(272, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_9" type="Sprite2D" parent="TileSprites"]
+position = Vector2(304, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_10" type="Sprite2D" parent="TileSprites"]
+position = Vector2(336, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_11" type="Sprite2D" parent="TileSprites"]
+position = Vector2(368, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_12" type="Sprite2D" parent="TileSprites"]
+position = Vector2(400, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_13" type="Sprite2D" parent="TileSprites"]
+position = Vector2(432, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_14" type="Sprite2D" parent="TileSprites"]
+position = Vector2(464, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_15" type="Sprite2D" parent="TileSprites"]
+position = Vector2(496, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_16" type="Sprite2D" parent="TileSprites"]
+position = Vector2(528, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_17" type="Sprite2D" parent="TileSprites"]
+position = Vector2(560, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_18" type="Sprite2D" parent="TileSprites"]
+position = Vector2(592, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_19" type="Sprite2D" parent="TileSprites"]
+position = Vector2(624, 368)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_ter_23" type="Sprite2D" parent="TileSprites"]
+position = Vector2(752, 304)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_ter_24" type="Sprite2D" parent="TileSprites"]
+position = Vector2(784, 304)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_ter_25" type="Sprite2D" parent="TileSprites"]
+position = Vector2(816, 304)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_ter_26" type="Sprite2D" parent="TileSprites"]
+position = Vector2(848, 304)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_ter_27" type="Sprite2D" parent="TileSprites"]
+position = Vector2(880, 304)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_ter_28" type="Sprite2D" parent="TileSprites"]
+position = Vector2(912, 304)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_ter_29" type="Sprite2D" parent="TileSprites"]
+position = Vector2(944, 304)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_ter_30" type="Sprite2D" parent="TileSprites"]
+position = Vector2(976, 304)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_ter_31" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1008, 304)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_ter_32" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1040, 304)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_ter_33" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1072, 304)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_ter_34" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1104, 304)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fl_36" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1168, 264)
+texture = ExtResource("8_tile_bridge")
+
+[node name="T_fl_37" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1200, 264)
+texture = ExtResource("8_tile_bridge")
+
+[node name="T_fl_38" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1232, 264)
+texture = ExtResource("8_tile_bridge")
+
+[node name="T_fl_39" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1264, 264)
+texture = ExtResource("8_tile_bridge")
+
+[node name="T_fort_42" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1360, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_43" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1392, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_44" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1424, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_45" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1456, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_46" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1488, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_47" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1520, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_48" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1552, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_49" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1584, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_50" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1616, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_51" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1648, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_52" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1680, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_53" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1712, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_54" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1744, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_fort_55" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1776, 272)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_58" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1872, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_59" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1904, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_60" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1936, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_61" type="Sprite2D" parent="TileSprites"]
+position = Vector2(1968, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_62" type="Sprite2D" parent="TileSprites"]
+position = Vector2(2000, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_63" type="Sprite2D" parent="TileSprites"]
+position = Vector2(2032, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_64" type="Sprite2D" parent="TileSprites"]
+position = Vector2(2064, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_65" type="Sprite2D" parent="TileSprites"]
+position = Vector2(2096, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_66" type="Sprite2D" parent="TileSprites"]
+position = Vector2(2128, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_67" type="Sprite2D" parent="TileSprites"]
+position = Vector2(2160, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_68" type="Sprite2D" parent="TileSprites"]
+position = Vector2(2192, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_69" type="Sprite2D" parent="TileSprites"]
+position = Vector2(2224, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="T_goal_70" type="Sprite2D" parent="TileSprites"]
+position = Vector2(2256, 336)
+texture = ExtResource("7_tile_grass")
+
+[node name="Coins" type="Node2D" parent="."]
+
+[node name="Coin1" parent="Coins" instance=ExtResource("4_coin")]
+position = Vector2(200, 320)
+
+[node name="Coin2" parent="Coins" instance=ExtResource("4_coin")]
+position = Vector2(240, 320)
+
+[node name="Coin3" parent="Coins" instance=ExtResource("4_coin")]
+position = Vector2(280, 320)
+
+[node name="Coin4" parent="Coins" instance=ExtResource("4_coin")]
+position = Vector2(850, 260)
+
+[node name="Coin5" parent="Coins" instance=ExtResource("4_coin")]
+position = Vector2(1170, 220)
+
+[node name="Coin6" parent="Coins" instance=ExtResource("4_coin")]
+position = Vector2(1200, 210)
+
+[node name="Coin7" parent="Coins" instance=ExtResource("4_coin")]
+position = Vector2(1230, 220)
+
+[node name="Chests" type="Node2D" parent="."]
+
+[node name="Chest1" parent="Chests" instance=ExtResource("5_chest")]
+position = Vector2(1000, 280)
+grants_upgrade = true
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Orc1" parent="Enemies" instance=ExtResource("3_orc")]
+position = Vector2(450, 336)
+
+[node name="Orc2" parent="Enemies" instance=ExtResource("3_orc")]
+position = Vector2(900, 272)
+orc_type = "orc2"
+
+[node name="OrcBoss" parent="Enemies" instance=ExtResource("3_orc")]
+position = Vector2(1600, 240)
+is_boss = true
+
+[node name="Flag" parent="." instance=ExtResource("6_flag")]
+position = Vector2(2150, 305)
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(80, 320)

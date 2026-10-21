@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/orc.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://SPRITES/ORC/PNG/Orc1/Without_shadow/orc1_run_without_shadow.png" id="2_tex"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_orc"]
+size = Vector2(16, 26)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_attack"]
+size = Vector2(24, 22)
+
+[node name="Orc" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+hframes = 8
+vframes = 4
+frame = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 3)
+shape = SubResource("RectangleShape2D_orc")
+
+[node name="LedgeCheck" type="RayCast2D" parent="."]
+position = Vector2(12, 10)
+target_position = Vector2(0, 16)
+
+[node name="AttackArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+position = Vector2(16, 4)
+shape = SubResource("RectangleShape2D_attack")
+disabled = true
+
+[connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_body_entered"]
