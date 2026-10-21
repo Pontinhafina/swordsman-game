@@ -527,3 +527,102 @@ class GoalFlag:
         sub_rect = pygame.Rect(frame_idx * 48, 0, 48, 48)
         frame_surf = img.subsurface(sub_rect)
         surface.blit(frame_surf, (int(self.x - cam_x - 8), int(self.y - cam_y)))
+
+class OwlHelper:
+    def __init__(self, x, y, message=""):
+        self.x = float(x)
+        self.y = float(y)
+        self.w = 32
+        self.h = 32
+        self.message = message
+        self.anim_timer = 0.0
+        self.active = False
+        self.hooted = False
+        self.gifted_heart = False
+
+    @property
+    def rect(self):
+        return pygame.Rect(int(self.x), int(self.y), self.w, self.h)
+
+    def update(self, dt, player, potions_list=None):
+        self.anim_timer += dt
+        dist = math.hypot((player.x + player.w / 2) - (self.x + 16), (player.y + player.h / 2) - (self.y + 16))
+        if dist < 85.0:
+            self.active = True
+            if not self.hooted:
+                self.hooted = True
+                sound.play('owl_hoot')
+
+            # Gift a potion if player is in danger (HP <= 2) and hasn't received a gift
+            if player.hp <= 2 and not self.gifted_heart and potions_list is not None:
+                self.gifted_heart = True
+                potions_list.append(PotionItem(self.x + 8, self.y + 24))
+                particles.add_text(self.x + 16, self.y - 12, "🦉 A CORUJA TE DEU UMA POÇÃO!", COLOR_GREEN)
+        else:
+            self.active = False
+            self.hooted = False
+
+    def draw(self, surface, sprite_mgr, font, player, cam_x, cam_y):
+        img = sprite_mgr.get('coruja')
+        if not img:
+            return
+        frame_idx = (int(self.anim_timer * 6) % 6) if self.active else (int(self.anim_timer * 2) % 3)
+        sub_rect = pygame.Rect(frame_idx * 32, 0, 32, 32)
+        frame_surf = img.subsurface(sub_rect)
+
+        draw_x = int(self.x - cam_x)
+        draw_y = int(self.y - cam_y)
+        surface.blit(frame_surf, (draw_x, draw_y))
+
+        # Speech bubble when near
+        if self.active and self.message:
+            lines = self.message.split('\n')
+            rendered_lines = [font.render(l, False, (240, 245, 255)) for l in lines]
+            max_w = max(r.get_width() for r in rendered_lines) + 14
+            total_h = len(rendered_lines) * 14 + 8
+            bx = draw_x + 16 - max_w // 2
+            by = draw_y - total_h - 6
+
+            pygame.draw.rect(surface, (18, 22, 32), (bx, by, max_w, total_h), border_radius=4)
+            pygame.draw.rect(surface, COLOR_GOLD, (bx, by, max_w, total_h), 1, border_radius=4)
+            pygame.draw.polygon(surface, COLOR_GOLD, [(draw_x + 16, draw_y - 1), (draw_x + 12, by + total_h), (draw_x + 20, by + total_h)])
+
+            for i, r in enumerate(rendered_lines):
+                surface.blit(r, (bx + 7, by + 4 + i * 14))
+
+class BossShockwave:
+    def __init__(self, x, y, direction=1, speed=150.0):
+        self.x = float(x)
+        self.y = float(y)
+        self.direction = direction
+        self.speed = speed
+        self.w = 26
+        self.h = 20
+        self.lifetime = 2.2
+        self.anim_timer = 0.0
+
+    @property
+    def rect(self):
+        return pygame.Rect(int(self.x + 3), int(self.y + 4), self.w, self.h)
+
+    def update(self, dt, player):
+        self.lifetime -= dt
+        self.anim_timer += dt * 10.0
+        self.x += self.direction * self.speed * dt
+
+        if not player.is_dead and player.invulnerable_timer <= 0.0:
+            if self.rect.colliderect(player.rect):
+                player.take_damage(1, knockback_dir=self.direction)
+
+    def draw(self, surface, sprite_mgr, cam_x, cam_y):
+        if self.lifetime <= 0:
+            return
+        img = sprite_mgr.get('shockwave')
+        if not img:
+            return
+        frame_idx = int(self.anim_timer) % 4
+        sub_rect = pygame.Rect(frame_idx * 32, 0, 32, 24)
+        frame_surf = img.subsurface(sub_rect)
+        if self.direction < 0:
+            frame_surf = pygame.transform.flip(frame_surf, True, False)
+        surface.blit(frame_surf, (int(self.x - cam_x), int(self.y - cam_y)))

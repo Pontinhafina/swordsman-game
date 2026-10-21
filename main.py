@@ -11,14 +11,14 @@ from game.enemy import OrcEnemy
 from game.objects import (
     Coin, Chest, KeyItem, RuneGate, GoalFlag,
     Spikes, SawBlade, MovingPlatform, CrackedWall,
-    CheckpointTorch, PotionItem, GemItem
+    CheckpointTorch, PotionItem, GemItem, OwlHelper, BossShockwave
 )
 from game.level import Level
 
 class PlatformerGame:
     def __init__(self):
         pygame.init()
-        pygame.display.set_caption("Swordsman: A Saga das 5 Fases")
+        pygame.display.set_caption("Swordsman: A Saga das 8 Fases")
 
         self.fullscreen = False
         self.window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
@@ -32,7 +32,7 @@ class PlatformerGame:
         self.sprite_mgr = init_sprites()
 
         self.current_stage = 1
-        self.total_stages = 5
+        self.total_stages = 8
         self.state = 'title' # 'title', 'playing', 'paused', 'stage_clear', 'gameover', 'victory'
 
         self.stats = {'score': 0, 'coins': 0}
@@ -47,8 +47,11 @@ class PlatformerGame:
             "FASE 1: AS FRONTEIRAS DA FLORESTA & TORRE DE VIGIA",
             "FASE 2: AS RUÍNAS DO ENTARDECER & LÂMINAS DE SERRA",
             "FASE 3: O DESFILADEIRO DOS SALGUEIROS & ESCALADA",
-            "FASE 4: O PÂNTANO DA LUA DE SANGUE & CASTELO",
-            "FASE 5: A FORTALEZA DO GENERAL ORC (CLÍMAX)"
+            "FASE 4: AS CATACUMBAS SUBTERRÂNEAS ALAGADAS",
+            "FASE 5: O PÂNTANO DA LUA DE SANGUE & CASTELO",
+            "FASE 6: O PICO CONGELADO DOS VENTOS",
+            "FASE 7: A FUNDIÇÃO VULCÂNICA DOS ORCS",
+            "FASE 8: A GRANDE FORTALEZA DO GENERAL ORC (CLÍMAX)"
         ]
 
         self.level = None
@@ -63,6 +66,8 @@ class PlatformerGame:
         self.checkpoints = []
         self.potions = []
         self.gems = []
+        self.owls = []
+        self.shockwaves = []
         self.key_item = None
         self.rune_gate = None
         self.goal = None
@@ -101,6 +106,8 @@ class PlatformerGame:
         self.checkpoints = self.level.checkpoints
         self.potions = self.level.potions
         self.gems = self.level.gems
+        self.owls = self.level.owls
+        self.shockwaves = self.level.shockwaves
         self.key_item = self.level.key_item
         self.rune_gate = self.level.rune_gate
         self.goal = self.level.goal
@@ -109,6 +116,11 @@ class PlatformerGame:
         particles.clear()
         self.cam_x = 0.0
         self.cam_y = 0.0
+
+        if stage_num == 8:
+            sound.play_bgm('boss')
+        else:
+            sound.play_bgm('stage')
 
     def run(self):
         running = True
@@ -132,6 +144,9 @@ class PlatformerGame:
 
                     if event.key == pygame.K_f:
                         self.toggle_fullscreen()
+
+                    if event.key == pygame.K_m:
+                        sound.toggle_music()
 
                     if self.state == 'title':
                         if event.key in [pygame.K_RETURN, pygame.K_SPACE, pygame.K_z, pygame.K_j]:
@@ -183,14 +198,10 @@ class PlatformerGame:
                 if axis_y > 0.4: keys_pressed['down'] = True
                 elif axis_y < -0.4: keys_pressed['up'] = True
 
-                if self.joystick.get_button(0): # A
-                    keys_pressed['jump'] = True
-                if self.joystick.get_button(2): # X
-                    keys_pressed['attack_pressed'] = True
-                if self.joystick.get_button(1) or self.joystick.get_button(5): # B or RB
-                    keys_pressed['dash_pressed'] = True
-                if self.joystick.get_button(3): # Y
-                    keys_pressed['interact_pressed'] = True
+                if self.joystick.get_button(0): keys_pressed['jump'] = True
+                if self.joystick.get_button(2): keys_pressed['attack_pressed'] = True
+                if self.joystick.get_button(1) or self.joystick.get_button(5): keys_pressed['dash_pressed'] = True
+                if self.joystick.get_button(3): keys_pressed['interact_pressed'] = True
 
             # Update & Render
             self.update(dt, keys_pressed)
@@ -215,6 +226,16 @@ class PlatformerGame:
 
         # Player
         self.player.update(dt, keys, self.level, self.enemies, self.chests, self.cracked_walls)
+
+        # Helper Owls
+        for owl in self.owls:
+            owl.update(dt, self.player, self.potions)
+
+        # Boss Shockwaves
+        for sw in self.shockwaves:
+            sw.update(dt, self.player)
+        self.shockwaves = [sw for sw in self.shockwaves if sw.lifetime > 0]
+        self.level.shockwaves = self.shockwaves
 
         # Moving Platforms
         for mp in self.moving_platforms:
@@ -259,7 +280,7 @@ class PlatformerGame:
         # Goal Flag / Stage Complete
         if self.goal:
             is_boss_beaten = not self.boss or self.boss.is_dead
-            if self.current_stage != 5 or is_boss_beaten:
+            if self.current_stage != 8 or is_boss_beaten:
                 won = self.goal.update(dt, self.player, self.rune_gate)
                 if won:
                     self.saved_hero_level = self.player.hero_level
@@ -327,6 +348,14 @@ class PlatformerGame:
         for sb in self.saw_blades:
             sb.draw(self.canvas, self.sprite_mgr, final_cam_x, final_cam_y)
 
+        # Boss Shockwaves
+        for sw in self.shockwaves:
+            sw.draw(self.canvas, self.sprite_mgr, final_cam_x, final_cam_y)
+
+        # Helper Owls
+        for owl in self.owls:
+            owl.draw(self.canvas, self.sprite_mgr, self.font, self.player, final_cam_x, final_cam_y)
+
         # Objects: Key, Rune Gate, Chests, Coins
         if self.key_item:
             self.key_item.draw(self.canvas, self.sprite_mgr, final_cam_x, final_cam_y)
@@ -339,7 +368,7 @@ class PlatformerGame:
 
         # Goal Flag
         if self.goal:
-            if self.current_stage != 5 or (self.boss and self.boss.is_dead):
+            if self.current_stage != 8 or (self.boss and self.boss.is_dead):
                 self.goal.draw(self.canvas, self.sprite_mgr, final_cam_x, final_cam_y)
 
         # Enemies
@@ -363,7 +392,7 @@ class PlatformerGame:
 
     def render_hud(self):
         # Stage title banner
-        txt = self.font.render(self.stage_titles[self.current_stage], False, (180, 195, 215))
+        txt = self.font.render(self.stage_titles[self.current_stage], False, (185, 200, 220))
         self.canvas.blit(txt, (14, 10))
 
         # Hearts
@@ -389,10 +418,11 @@ class PlatformerGame:
             t_dash = self.font.render("DASH [...]", False, (120, 130, 145))
         self.canvas.blit(t_dash, (200, 24))
 
-        # Key badge if holding
-        if self.player.has_key:
-            t_key = self.font.render("🔑 CHAVE", False, (255, 235, 60))
-            self.canvas.blit(t_key, (285, 24))
+        # Music badge
+        m_txt = "♫ ON" if sound.music_enabled else "♫ OFF"
+        m_col = (140, 220, 140) if sound.music_enabled else (140, 140, 150)
+        t_mus = self.font.render(f"[M] {m_txt}", False, m_col)
+        self.canvas.blit(t_mus, (285, 24))
 
         # Coins & Score
         t_coins = self.font.render(f"💰 x {self.stats['coins']}", False, COLOR_GOLD)
@@ -401,8 +431,8 @@ class PlatformerGame:
         t_score = self.font.render(f"PTS: {self.stats['score']}", False, COLOR_WHITE)
         self.canvas.blit(t_score, (410, 24))
 
-        # Boss health bar in stage 5
-        if self.current_stage == 5 and self.boss and not self.boss.is_dead and self.player.x > 54 * 32:
+        # Boss health bar in stage 8
+        if self.current_stage == 8 and self.boss and not self.boss.is_dead and self.player.x > 50 * 32:
             bx = 140
             by = 45
             bw = 200
@@ -418,29 +448,34 @@ class PlatformerGame:
             pygame.draw.rect(self.canvas, c, (bx + 1, by + 1, int((bw - 2) * pct), bh - 2))
 
     def render_title(self):
-        t1 = self.font_title.render("SWORDSMAN: A SAGA DAS 5 FASES", False, COLOR_GOLD)
-        self.canvas.blit(t1, (INTERNAL_WIDTH / 2 - t1.get_width() / 2, 38))
+        t1 = self.font_title.render("SWORDSMAN: A SAGA DAS 8 FASES", False, COLOR_GOLD)
+        self.canvas.blit(t1, (INTERNAL_WIDTH / 2 - t1.get_width() / 2, 35))
 
-        t2 = self.font.render("Inspirado em Shovel Knight • Hollow Knight • Castlevania • Dead Cells", False, (160, 185, 210))
-        self.canvas.blit(t2, (INTERNAL_WIDTH / 2 - t2.get_width() / 2, 68))
+        t2 = self.font.render("Campanha Completa de 8 Fases • Trilha Sonora Chiptune • Coruja Guia", False, (160, 185, 215))
+        self.canvas.blit(t2, (INTERNAL_WIDTH / 2 - t2.get_width() / 2, 65))
 
         # Hero preview
         h1 = self.sprite_mgr.get('hero1_idle')
         if h1:
             frame = h1.subsurface(pygame.Rect(0, 128, 64, 64))
-            self.canvas.blit(frame, (INTERNAL_WIDTH / 2 - 80, 92))
+            self.canvas.blit(frame, (INTERNAL_WIDTH / 2 - 90, 88))
+
+        owl = self.sprite_mgr.get('coruja')
+        if owl:
+            o_frame = owl.subsurface(pygame.Rect(0, 0, 32, 32))
+            self.canvas.blit(o_frame, (INTERNAL_WIDTH / 2 - 16, 110))
 
         boss = self.sprite_mgr.get('orc3_idle')
         if boss:
             b_frame = boss.subsurface(pygame.Rect(0, 128, 64, 64))
-            self.canvas.blit(b_frame, (INTERNAL_WIDTH / 2 + 20, 92))
+            self.canvas.blit(b_frame, (INTERNAL_WIDTH / 2 + 30, 88))
 
         if int(pygame.time.get_ticks() / 450) % 2 == 0:
             prompt = self.font_large.render("PRESSIONE [ENTER] OU [ESPAÇO] PARA JOGAR", False, COLOR_GREEN)
             self.canvas.blit(prompt, (INTERNAL_WIDTH / 2 - prompt.get_width() / 2, 175))
 
-        h1 = self.font.render("[A/D] Mover  •  [ESPAÇO] Pular  •  [SHIFT / K] Dash  •  [J / Z] Cortar", False, COLOR_WHITE)
-        h2 = self.font.render("[S no ar] Pogo Bounce em Inimigos, Espinhos e Serras  •  [F] Tela Cheia", False, (140, 165, 195))
+        h1 = self.font.render("[A/D] Mover  •  [ESPAÇO] Pular  •  [SHIFT/K] Dash  •  [J/Z] Cortar", False, COLOR_WHITE)
+        h2 = self.font.render("[S no ar] Pogo Strike  •  [M] Música Chiptune  •  [F] Tela Cheia", False, (140, 165, 195))
         self.canvas.blit(h1, (INTERNAL_WIDTH / 2 - h1.get_width() / 2, 215))
         self.canvas.blit(h2, (INTERNAL_WIDTH / 2 - h2.get_width() / 2, 235))
 
@@ -482,17 +517,17 @@ class PlatformerGame:
         overlay.fill((10, 30, 20, 230))
         self.canvas.blit(overlay, (0, 0))
 
-        t = self.font_title.render("🎉 PARABÉNS! VOCÊ SALVOU O REINO! 🎉", False, COLOR_GOLD)
+        t = self.font_title.render("🎉 PARABÉNS! VOCÊ LIBERTOU TODAS AS 8 TERRAS! 🎉", False, COLOR_GOLD)
         self.canvas.blit(t, (INTERNAL_WIDTH / 2 - t.get_width() / 2, 50))
 
-        sub = self.font.render("O General Orc foi derrotado e todas as terras foram libertadas!", False, COLOR_GREEN)
+        sub = self.font.render("O General Orc e seu exército foram derrotados para sempre!", False, COLOR_GREEN)
         self.canvas.blit(sub, (INTERNAL_WIDTH / 2 - sub.get_width() / 2, 85))
 
         elapsed = (pygame.time.get_ticks() - self.start_ticks) // 1000
         t_time = self.font.render(f"Tempo Total: {elapsed}s  •  Moedas Coletadas: {self.stats['coins']}", False, COLOR_WHITE)
         self.canvas.blit(t_time, (INTERNAL_WIDTH / 2 - t_time.get_width() / 2, 115))
 
-        final_score = self.stats['score'] + self.stats['coins'] * 30
+        final_score = self.stats['score'] + self.stats['coins'] * 35
         t_sc = self.font_large.render(f"PONTUAÇÃO FINAL: {final_score}", False, COLOR_GOLD)
         self.canvas.blit(t_sc, (INTERNAL_WIDTH / 2 - t_sc.get_width() / 2, 145))
 
@@ -508,7 +543,7 @@ class PlatformerGame:
         t = self.font_large.render("JOGO PAUSADO", False, COLOR_WHITE)
         self.canvas.blit(t, (INTERNAL_WIDTH / 2 - t.get_width() / 2, 110))
 
-        sub = self.font.render("Pressione [ESC] ou [P] para continuar", False, (200, 210, 225))
+        sub = self.font.render("Pressione [ESC] ou [P] para continuar  •  [M] Música", False, (200, 210, 225))
         self.canvas.blit(sub, (INTERNAL_WIDTH / 2 - sub.get_width() / 2, 140))
 
 if __name__ == '__main__':

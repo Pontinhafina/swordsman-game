@@ -55,6 +55,8 @@ class SpriteManager:
         self.images['potion'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/potion.png')
         self.images['gem'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/gem.png')
         self.images['slash_vfx'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/slash_vfx.png')
+        self.images['coruja'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/coruja_helper.png')
+        self.images['shockwave'] = self.load_image('SPRITES/PLATAFORMA/4 Animated objects/shockwave.png')
 
         # Props
         self.images['tree_1'] = self.load_image('SPRITES/PLATAFORMA/3 Objects/Trees/1.png')

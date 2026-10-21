@@ -1,10 +1,6 @@
-# ⚔️ Swordsman: A Saga das 5 Fases (Python Native Edition)
+# ⚔️ Swordsman: A Saga das 8 Fases (Python Native Edition)
 
-Um jogo de plataforma e ação 2D de ritmo acelerado desenvolvido em **Python 3** com **Pygame-CE**, inspirado diretamente nas obras-primas do gênero de plataforma:
-* **Hollow Knight & Shovel Knight:** Mecânica de *Pogo Jump* (quicar na cabeça de inimigos, espinhos e lâminas de serra), *Hitstop / Micro-Freeze* de 0.06s para impacto cortante, e *Screen Shake*.
-* **Dead Cells:** Movimentação ágil com *Dash* horizontal com invencibilidade momentânea, fantasmas de rastro de movimento e corte correndo (*Run Attack*).
-* **Castlevania & Metroidvania:** Paredes secretas rachadas quebráveis com espada (*Cracked Walls*), bifurcações de rotas (alta/baixa), tochas de *Checkpoint* que curam e salvam o renascimento, e baús com upgrades de armadura (**NV.1 Padrão → NV.2 Ferro → NV.3 Ouro**).
-* **Wonder Boy & Celeste:** Salto na parede (*Wall Slide* e *Wall Jump*), plataformas móveis verticais e horizontais (*Moving Platforms*), e controle micro-ajustável de salto variável com flutuação de ápice.
+Um jogo de plataforma e ação 2D completo desenvolvido em **Python 3** com **Pygame-CE**, inspirado diretamente nas mecânicas consagradas de *Hollow Knight*, *Shovel Knight*, *Dead Cells*, *Castlevania* e *Celeste*.
 
 ---
 
@@ -25,45 +21,63 @@ python main.py
 | Ação | Teclado | Controle (Xbox / PlayStation / USB) |
 |---|---|---|
 | **Mover Esquerda / Direita** | `A` / `D` ou `←` / `→` | Analógico Esquerdo / D-Pad |
-| **Pular (Segure para alto, solte para curto)** | `Espaço`, `W` ou `↑` | Botão Sul (`A` no Xbox, `X` no PS) |
-| **Dash (Arrancada Rápida com Invulnerabilidade)** | `Shift Esquerdo`, `K` ou `C` | Botão Leste (`B` no Xbox) ou Gatilho `RB` |
+| **Pular (Toque rápido para pulo curto)** | `Espaço`, `W` ou `↑` | Botão Sul (`A` no Xbox, `X` no PS) |
+| **Dash (Arrancada Rápida com Invulnerabilidade)** | `Shift`, `K` ou `C` | Botão Leste (`B` no Xbox) ou Gatilho `RB` |
 | **Atacar com Espada (Corta Correndo!)** | `J` ou `Z` | Botão Oeste (`X` no Xbox, `Quadrado` no PS) |
-| **Pogo Attack (Golpe para Baixo no Ar)** | `S` ou `↓` no ar + Ataque | Analógico/D-Pad para baixo no ar + Ataque |
-| **Wall Slide & Wall Jump** | Pressione na parede no ar + Pulo | Analógico na parede + Botão de Pulo |
+| **Pogo Strike (Golpe para Baixo no Ar)** | `S` ou `↓` no ar + Ataque | Analógico para baixo no ar + Ataque |
+| **Wall Slide & Wall Jump** | Deslize na parede + Pulo | Analógico na parede + Botão de Pulo |
 | **Interagir / Abrir Baú** | `E` | Botão Norte (`Y` no Xbox, `Triângulo` no PS) |
+| **Ligar / Desligar Música Chiptune** | `M` | - |
 | **Alternar Tela Cheia (Fullscreen)** | `F` | - |
 | **Pausar / Despausar** | `ESC` ou `P` | Botão Start |
 | **Reiniciar Fase Atual** | `R` | - |
 
 ---
 
-## 🎨 Novos Sprites Criados (Pixel Art Original)
+## 🦉 A Coruja Sábia de Ajuda (*Owl Helper*)
 
-Foram gerados novos spritesheets respeitando a paleta e a resolução de 32x32 do tileset:
-1. **Espinhos de Aço (`spikes.png`):** Dano ao encostar, mas podem ser usados para saltar com o golpe de Pogo!
-2. **Lâminas de Serra Giratórias (`saw_blade.png`):** Armadilhas rotativas animadas que patrulham pontes e desfiladeiros.
-3. **Plataformas Móveis Flutuantes (`moving_plat.png`):** Pranchas de madeira reforçadas com ferro que se movem em eixos X e Y transportando o jogador.
-4. **Paredes Secretas Rachadas (`cracked_wall.png`):** Blocos de pedra com fissuras que quebram com golpes de espada, revelando câmaras secretas.
-5. **Tochas de Checkpoint (`checkpoint_torch.png`):** Totens com chamas animadas que curam o herói ao passar e salvam o ponto de renascimento.
-6. **Frascos de Poção de Vida (`potion.png`):** Elixir vermelho brilhante que recupera corações de vida.
-7. **Gemas de Relíquia (`gem.png`):** Esmeraldas e rubis lapidados com brilho animado que concedem pontuações bônus.
-8. **Efeitos Visuais de Corte (`slash_vfx.png`):** Arcos de energia em meia-lua cortante com brilho ciano.
-9. **Animação de Corte Correndo (`Swordsman_lvlX_Run_Attack`):** Agora o personagem ataca sem travar os pés no chão!
+Em cada uma das 8 fases, você encontrará a **Coruja Sábia** pousada em galhos e totens ancestrais:
+* **Balões de Fala e Dicas Táticas:** Ao se aproximar, ela pia (`owl_hoot`), bate as asas e ensina os controles e segredos da fase atual.
+* **Presente de Cura em Perigo:** Se o herói estiver com a vida baixa (2 corações ou menos), a coruja solta uma **Poção de Vida** para salvá-lo!
 
 ---
 
-## 🗺️ As 5 Fases Recriadas
+## 👑 O Chefão Inteligente: General Orc
 
-1. **Fase 1: As Fronteiras da Floresta & Torre de Vigia**
-   - Poço de espinhos inicial, câmara secreta com parede rachada contendo Poção de Vida e Gema, escalada vertical na torre de vigia com wall jump para o baú da **Armadura Nível 2 de Ferro**, e plataforma móvel sobre o desfiladeiro.
-2. **Fase 2: As Ruínas do Entardecer & Lâminas de Serra**
-   - Rota alta (plataformas sobre espinhos) vs rota baixa (combate direto), armadilha de serra giratória em patrulha, chave dourada no topo da torre, Tocha de Checkpoint e o Portão Rúnico ancestral.
-3. **Fase 3: O Desfiladeiro dos Salgueiros & Escalada Vertical**
-   - Elevador móvel vertical no abismo, fenda estreita com serra vertical exigindo wall slide alternado, plataformas móveis sincronizadas e câmara secreta na copa das árvores.
-4. **Fase 4: O Pântano da Lua de Sangue & Castelo Interior**
-   - Corredores do castelo com serras móveis, armaria secreta atrás de parede quebrável guardando a **Armadura Nível 3 do Cavaleiro Dourado**, travessia de plataformas sobre o lago de espinhos, chave secreta e grande portão rúnico.
-5. **Fase 5: A Fortaleza do General Orc (Clímax / Arena)**
-   - Ponte fortificada com serras, santuário pré-batalha com Tocha de Checkpoint e Poções, e a **Arena do Trono** em múltiplos andares onde o jogador pode pular nos patamares elevados para desviar dos tremores de terra e golpear o General Orc em suas duas fases furiosas!
+O General Orc (Fase 8) foi reformulado com inteligência artificial avançada:
+1. **Impacto de Chão e Ondas de Choque (*Ground Slam Shockwave*):**
+   * O General pula alto e desce com um estrondo na arena, emitindo **ondas de choque cortantes** que viajam pelo chão para a esquerda e para a direita. O jogador deve pular ou subir nas plataformas elevadas para desviar!
+2. **Carga de Escudo Furiosa (*Shield Charge*):**
+   * O General sinaliza um alerta vermelho e avança em disparada pelo chão com o escudo em riste. É necessário saltar por cima ou usar o *Dash* para atravessá-lo ileso.
+3. **Salto de Guerra (*Leap Cleave*):**
+   * Se o jogador tentar ficar escondido nas plataformas altas, o chefe pula até a plataforma para desferir um corte pesado!
+4. **Recuo Tático (*Tactical Leap Back*):**
+   * Se você acertar múltiplos golpes rápidos no chefe, ele salta para trás para restabelecer distância.
+5. **Fase 2 Enfurecida (Abaixo de 50% de Vida):**
+   * O General solta um rugido aterrorizante, ganha um halo vermelho furioso, fica 40% mais rápido e invoca soldados orcs batedores para a batalha!
+
+---
+
+## 🎵 Motor de Áudio Procedural com Trilha Sonora Chiptune
+
+O sistema de áudio foi expandido e sintetiza em tempo real:
+* **Trilha Sonora Retrô de Aventura (*BGM Stage*):** Linha de baixo e arpeggios dinâmicos de 8 bits que tocam durante a exploração.
+* **Trilha Sonora de Batalha de Chefe (*BGM Boss*):** Ritmo acelerado e tenso durante a batalha contra o General Orc.
+* Efeitos sonoros para piado da coruja, estrondo do choque no chão, rugido do chefe, passos e estilhaçamento de rochas.
+* Pressione **`M`** a qualquer momento para ligar ou desligar a música!
+
+---
+
+## 🗺️ A Campanha Completa das 8 Fases
+
+1. **Fase 1: As Fronteiras da Floresta & Torre de Vigia** (Introdução, espinhos, sala secreta e armadura de ferro Nv.2)
+2. **Fase 2: As Ruínas do Entardecer & Lâminas de Serra** (Armadilhas de serra, rotas alta/baixa, chave da torre e portão rúnico)
+3. **Fase 3: O Desfiladeiro dos Salgueiros & Escalada** (Elevadores verticais no precipício, canyon estreito com wall-jumps)
+4. **Fase 4: As Catacumbas Subterrâneas Alagadas** (Cripta de pedra com poços e passagens secretas atrás de paredes rachadas)
+5. **Fase 5: O Pântano da Lua de Sangue & Castelo Interior** (Pogo jumps sobre orcs e armaria com a **Armadura Nível 3 de Ouro**)
+6. **Fase 6: O Pico Congelado dos Ventos** (Montanhas nevadas com pontes suspensas e saltos longos combinados com Dash)
+7. **Fase 7: A Fundição Vulcânica dos Orcs** (Lagos de lava, plataformas sincronizadas e guardas de elite com escudos)
+8. **Fase 8: A Grande Fortaleza do General Orc (O Clímax Final)** (Arena do trono em 3 andares com ondas de choque e chefe de 2 fases)
 
 ---
 
@@ -72,7 +86,7 @@ Foram gerados novos spritesheets respeitando a paleta e a resolução de 32x32 d
 Configuração do usuário do Git:
 * Email: `davidbrunopatriota205@gmail.com`
 
-Para subir o código para o seu repositório remoto no GitHub:
+Para sincronizar com seu repositório remoto:
 ```powershell
 git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
 git push -u origin main

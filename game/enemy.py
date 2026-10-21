@@ -1,8 +1,10 @@
 import pygame
 import math
+import random
 from game.settings import *
 from game.sound import sound
 from game.particles import particles
+from game.objects import BossShockwave
 
 class OrcEnemy:
     def __init__(self, x, y, patrol_dist=100, orc_type='orc1'):
@@ -14,7 +16,7 @@ class OrcEnemy:
 
         self.w = 26 if self.is_boss else 20
         self.h = 32 if self.is_boss else 28
-        self.speed = 65.0 if self.is_boss else (48.0 if orc_type == 'orc2' else 38.0)
+        self.speed = 68.0 if self.is_boss else (48.0 if orc_type == 'orc2' else 38.0)
         self.vx = self.speed
         self.vy = 0.0
         self.facing = 1 # 1 = right, -1 = left
@@ -23,7 +25,7 @@ class OrcEnemy:
         self.patrol_right = x + patrol_dist
 
         if self.is_boss:
-            self.max_hp = 10
+            self.max_hp = 14
         elif orc_type == 'orc2':
             self.max_hp = 3
         else:
@@ -38,36 +40,54 @@ class OrcEnemy:
         self.attack_hit_done = False
         self.enraged = False
 
+        # Boss Intelligent AI States
+        self.boss_state = 'chase' # 'chase', 'melee', 'slam_windup', 'slam_air', 'charge', 'retreat'
+        self.boss_timer = 0.0
+        self.charge_vx = 0.0
+        self.hits_in_streak = 0
+        self.minions_summoned = False
+
         self.anim_timer = 0.0
         self.anim_frame = 0
         self.on_ground = False
 
     @property
     def rect(self):
-        return pygame.Rect(int(self.x), int(self.y), self.w, self.h)
+        return pygame.Rect(round(self.x), round(self.y), self.w, self.h)
 
     def take_damage(self, amount, knockback_dir=0):
         if self.is_dead:
             return
         self.hp -= amount
-        self.hurt_timer = 0.32
+        self.hurt_timer = 0.28
         self.is_attacking = False
+        self.hits_in_streak += 1
 
-        kb = 35.0 if self.is_boss else 90.0
+        kb = 30.0 if self.is_boss else 95.0
         self.vx = knockback_dir * kb
-        self.vy = -70.0 if self.is_boss else -100.0
+        self.vy = -60.0 if self.is_boss else -100.0
 
         sound.play('hit')
-        spark_color = (229, 62, 62) if self.is_boss else (72, 187, 120)
-        particles.add_hit_sparks(self.x + self.w / 2, self.y + self.h / 2, spark_color, 16 if self.is_boss else 8)
+        spark_color = (255, 60, 60) if self.is_boss else (72, 187, 120)
+        particles.add_hit_sparks(self.x + self.w / 2, self.y + self.h / 2, spark_color, 18 if self.is_boss else 8)
         particles.add_text(self.x + self.w / 2, self.y - 6, f"-{amount}", (255, 80, 80))
+
+        # Boss Smart Reaction: Leaps back after taking 2 hits to create tactical distance!
+        if self.is_boss and self.hits_in_streak >= 2 and not self.is_dead:
+            self.hits_in_streak = 0
+            self.boss_state = 'retreat'
+            self.boss_timer = 0.4
+            self.vx = -self.facing * 140.0
+            self.vy = -180.0
+            particles.add_text(self.x + self.w / 2, self.y - 18, "RECUO TÁTICO!", COLOR_GOLD)
 
         # Boss enrage at 50% HP
         if self.is_boss and not self.enraged and self.hp <= self.max_hp // 2:
             self.enraged = True
-            self.speed = 85.0
-            particles.trigger_screenshake(0.4, 6.0)
-            particles.add_hit_sparks(self.x + self.w / 2, self.y + self.h / 2, (255, 0, 50), 30)
+            self.speed = 92.0
+            sound.play('boss_roar')
+            particles.trigger_screenshake(0.45, 7.0)
+            particles.add_hit_sparks(self.x + self.w / 2, self.y + self.h / 2, (255, 0, 50), 35)
             particles.add_text(self.x + self.w / 2, self.y - 22, "⚡ GENERAL ENFURECIDO! ⚡", (255, 50, 50))
 
         if self.hp <= 0:
@@ -79,6 +99,11 @@ class OrcEnemy:
         self.death_timer = 0.0
         self.vx = 0.0
         sound.play('death')
+        if self.is_boss:
+            sound.play('victory')
+            particles.trigger_screenshake(0.5, 8.0)
+            particles.add_hit_sparks(self.x + self.w / 2, self.y + self.h / 2, COLOR_GOLD, 50)
+            particles.add_text(self.x + self.w / 2, self.y - 20, "GENERAL DERROTADO!", COLOR_GOLD)
 
     def update(self, dt, player, level, enemies_list, coins_list):
         if self.is_dead:
@@ -87,7 +112,7 @@ class OrcEnemy:
             self.y += self.vy * dt
             c = level.check_tile_collision(self.rect)
             if c and self.vy > 0:
-                self.y = c.top - self.h
+                self.y = float(c.top - self.h)
                 self.vy = 0.0
             self.anim_frame = min(6, int(self.death_timer / 0.12))
             return
@@ -104,35 +129,39 @@ class OrcEnemy:
         dy = (player.y + player.h / 2) - (self.y + self.h / 2)
         dist = math.hypot(dx, dy)
 
-        # Attacking logic
+        # =====================================================================
+        # INTELLIGENT BOSS AI (Orc 3 General)
+        # =====================================================================
+        if self.is_boss:
+            self.update_boss_ai(dt, player, level, enemies_list, dx, dy, dist)
+            return
+
+        # =====================================================================
+        # STANDARD ORC AI (Orc 1 & Orc 2)
+        # =====================================================================
         if self.is_attacking:
             self.anim_timer += dt
-            frame_dur = 0.07 if self.is_boss else 0.09
-            self.anim_frame = int(self.anim_timer / frame_dur)
+            self.anim_frame = int(self.anim_timer / 0.08)
 
             # Hit frames: 3 to 5
             if 3 <= self.anim_frame <= 5 and not self.attack_hit_done:
-                reach = 28 if self.is_boss else 22
+                reach = 22
                 ax = int(self.x + self.w - 4 if self.facing > 0 else self.x - reach)
                 hit_box = pygame.Rect(ax, int(self.y + 4), reach, self.h - 4)
 
                 if not player.is_dead and hit_box.colliderect(player.rect):
-                    dmg = 2 if self.is_boss else 1
-                    player.take_damage(dmg, self.facing)
+                    player.take_damage(1, self.facing)
                     self.attack_hit_done = True
-                    if self.is_boss:
-                        particles.trigger_screenshake(0.2, 5.0)
 
             if self.anim_frame >= 8:
                 self.is_attacking = False
-                self.attack_cooldown = 0.6 if (self.is_boss and self.enraged) else 1.0
+                self.attack_cooldown = 1.0
 
             self.move_and_collide(dt, level)
             return
 
         # Check if in strike range
-        attack_dist = 36 if self.is_boss else 28
-        if dist < attack_dist and abs(dy) < 24 and self.attack_cooldown <= 0.0 and not player.is_dead:
+        if dist < 28 and abs(dy) < 24 and self.attack_cooldown <= 0.0 and not player.is_dead:
             self.is_attacking = True
             self.attack_hit_done = False
             self.anim_timer = 0.0
@@ -142,11 +171,10 @@ class OrcEnemy:
             return
 
         # Aggro / Chase
-        sight_range = 180 if self.is_boss else (150 if self.orc_type == 'orc2' else 120)
+        sight_range = 150 if self.orc_type == 'orc2' else 120
         if dist < sight_range and abs(dy) < 48 and not player.is_dead:
             self.facing = 1 if dx > 0 else -1
-            chase_mult = 1.3 if (self.is_boss and self.enraged) else 1.15
-            self.vx = self.facing * self.speed * chase_mult
+            self.vx = self.facing * self.speed * 1.15
         else:
             # Patrol
             if self.facing > 0 and self.x >= self.patrol_right:
@@ -168,6 +196,134 @@ class OrcEnemy:
         if not player.is_dead and self.rect.colliderect(player.rect):
             player.take_damage(1, 1 if dx > 0 else -1)
 
+    def update_boss_ai(self, dt, player, level, enemies_list, dx, dy, dist):
+        self.boss_timer -= dt
+
+        # Spawn minion scouts once upon entering Phase 2
+        if self.enraged and not self.minions_summoned:
+            self.minions_summoned = True
+            enemies_list.append(OrcEnemy(self.x - 40, self.y, 40, 'orc1'))
+            enemies_list.append(OrcEnemy(self.x + 60, self.y, 40, 'orc1'))
+            particles.add_text(self.x + self.w / 2, self.y - 26, "INVOCAÇÃO DE BATEDORES!", COLOR_RED)
+
+        # State 1: Retreat
+        if self.boss_state == 'retreat':
+            if self.boss_timer <= 0 or self.on_ground:
+                # Decide next move: Ground slam or Charge!
+                self.boss_state = 'slam_windup' if random.random() < 0.55 else 'charge'
+                self.boss_timer = 0.45
+            self.move_and_collide(dt, level)
+            return
+
+        # State 2: Ground Slam Windup
+        if self.boss_state == 'slam_windup':
+            self.vx = 0.0
+            self.facing = 1 if dx > 0 else -1
+            if self.boss_timer <= 0:
+                # Leap into air!
+                self.boss_state = 'slam_air'
+                self.vy = -260.0
+                self.vx = self.facing * 80.0
+                particles.add_text(self.x + self.w / 2, self.y - 18, "⚡ IMPACTO DE CHÃO! ⚡", COLOR_GOLD)
+            self.move_and_collide(dt, level)
+            return
+
+        # State 3: Ground Slam in Air
+        if self.boss_state == 'slam_air':
+            self.move_and_collide(dt, level)
+            if self.on_ground and self.vy >= 0:
+                # SLAM DOWN!
+                sound.play('boss_slam')
+                particles.trigger_screenshake(0.35, 6.5)
+                particles.add_hit_sparks(self.x + self.w / 2, self.y + self.h, (255, 140, 20), 30)
+
+                # Emit shockwaves left and right!
+                sw_speed = 180.0 if self.enraged else 140.0
+                level.shockwaves.append(BossShockwave(self.x - 12, self.y + self.h - 22, direction=-1, speed=sw_speed))
+                level.shockwaves.append(BossShockwave(self.x + self.w, self.y + self.h - 22, direction=1, speed=sw_speed))
+
+                self.boss_state = 'chase'
+                self.attack_cooldown = 1.0 if self.enraged else 1.6
+            return
+
+        # State 4: Shield Charge
+        if self.boss_state == 'charge':
+            if self.boss_timer > 0.35: # Telegraph windup
+                self.vx = 0.0
+                self.facing = 1 if dx > 0 else -1
+                particles.add_text(self.x + self.w / 2, self.y - 16, "⚡ CARGA FURADA! ⚡", COLOR_RED)
+            else: # Actual charge
+                charge_speed = 190.0 if self.enraged else 160.0
+                self.vx = self.facing * charge_speed
+                if self.boss_timer <= 0:
+                    self.boss_state = 'chase'
+                    self.attack_cooldown = 1.2
+            self.move_and_collide(dt, level)
+
+            # High contact damage during charge
+            if not player.is_dead and self.rect.colliderect(player.rect):
+                player.take_damage(2, self.facing)
+            return
+
+        # State 5: Melee Attack
+        if self.is_attacking:
+            self.anim_timer += dt
+            self.anim_frame = int(self.anim_timer / 0.065)
+
+            if 2 <= self.anim_frame <= 5 and not self.attack_hit_done:
+                reach = 32
+                ax = int(self.x + self.w - 4 if self.facing > 0 else self.x - reach)
+                hit_box = pygame.Rect(ax, int(self.y + 2), reach, self.h)
+
+                if not player.is_dead and hit_box.colliderect(player.rect):
+                    player.take_damage(2, self.facing)
+                    self.attack_hit_done = True
+                    particles.trigger_screenshake(0.2, 5.0)
+
+            if self.anim_frame >= 8:
+                self.is_attacking = False
+                self.boss_state = 'chase'
+                self.attack_cooldown = 0.5 if self.enraged else 0.9
+
+            self.move_and_collide(dt, level)
+            return
+
+        # Default: Chase & Tactical Selection
+        self.facing = 1 if dx > 0 else -1
+
+        # In melee range: Slash!
+        if dist < 38 and abs(dy) < 28 and self.attack_cooldown <= 0.0:
+            self.is_attacking = True
+            self.attack_hit_done = False
+            self.anim_timer = 0.0
+            self.anim_frame = 0
+            self.vx = 0.0
+            return
+
+        # Medium distance: Randomly choose between Slam or Charge when cooldown expires!
+        if dist > 60 and self.attack_cooldown <= 0.0 and random.random() < 0.03:
+            choice = random.choice(['slam', 'charge'])
+            if choice == 'slam':
+                self.boss_state = 'slam_windup'
+                self.boss_timer = 0.4
+            else:
+                self.boss_state = 'charge'
+                self.boss_timer = 0.8
+            return
+
+        # If player is high above on platforms: Leap up to challenge!
+        if dy < -45 and abs(dx) < 70 and self.on_ground and random.random() < 0.04:
+            self.vy = -270.0
+            self.vx = self.facing * 75.0
+            particles.add_text(self.x + self.w / 2, self.y - 14, "SALTO DE GUERRA!", COLOR_GOLD)
+
+        chase_mult = 1.35 if self.enraged else 1.10
+        self.vx = self.facing * self.speed * chase_mult
+        self.move_and_collide(dt, level)
+
+        if not player.is_dead and self.rect.colliderect(player.rect):
+            player.take_damage(1, 1 if dx > 0 else -1)
+
     def move_and_collide(self, dt, level):
         self.vy += GRAVITY * dt
         if self.vy > MAX_FALL_SPEED:
@@ -178,24 +334,35 @@ class OrcEnemy:
         c_x = level.check_tile_collision(self.rect)
         if c_x:
             if self.vx > 0:
-                self.x = c_x.left - self.w - 0.01
+                self.x = float(c_x.left - self.w)
             elif self.vx < 0:
-                self.x = c_x.right + 0.01
+                self.x = float(c_x.right)
             self.facing = -self.facing
             self.vx = self.facing * abs(self.vx)
 
         # Vertical
         self.y += self.vy * dt
-        self.on_ground = False
         c_y = level.check_tile_collision(self.rect)
         if c_y:
             if self.vy > 0:
-                self.y = c_y.top - self.h - 0.01
+                self.y = float(c_y.top - self.h)
                 self.vy = 0.0
                 self.on_ground = True
             elif self.vy < 0:
-                self.y = c_y.bottom + 0.01
+                self.y = float(c_y.bottom)
                 self.vy = 0.0
+        else:
+            if self.vy >= 0:
+                probe = pygame.Rect(round(self.x) + 2, round(self.y) + self.h, self.w - 4, 3)
+                ground_tile = level.check_tile_collision(probe)
+                if ground_tile:
+                    self.y = float(ground_tile.top - self.h)
+                    self.vy = 0.0
+                    self.on_ground = True
+                else:
+                    self.on_ground = False
+            else:
+                self.on_ground = False
 
     def draw(self, surface, sprite_mgr, cam_x, cam_y):
         prefix = f"{self.orc_type}_"
@@ -224,14 +391,17 @@ class OrcEnemy:
         sub_rect = pygame.Rect(frame_idx * 64, row * 64, 64, 64)
         frame_surf = sheet.subsurface(sub_rect)
 
-        # Note: Raw Orc sheet naturally faces LEFT, so when facing RIGHT (> 0), flip horizontally!
+        # Orc sheets face LEFT by default, so invert flip
         if self.facing > 0:
             frame_surf = pygame.transform.flip(frame_surf, True, False)
 
         if self.is_boss:
-            frame_surf = pygame.transform.scale(frame_surf, (76, 76))
-            draw_x = int(self.x + self.w / 2 - 38 - cam_x)
-            draw_y = int(self.y + self.h - 50 - cam_y)
+            frame_surf = pygame.transform.scale(frame_surf, (80, 80))
+            if self.enraged and int(pygame.time.get_ticks() / 100) % 2 == 0:
+                # Red rage glow
+                frame_surf.fill((255, 60, 60, 100), special_flags=pygame.BLEND_RGB_ADD)
+            draw_x = int(self.x + self.w / 2 - 40 - cam_x)
+            draw_y = int(self.y + self.h - 52 - cam_y)
         else:
             draw_x = int(self.x + self.w / 2 - 31 - cam_x)
             draw_y = int(self.y + self.h - 42 - cam_y)

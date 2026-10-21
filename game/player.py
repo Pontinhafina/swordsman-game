@@ -65,7 +65,7 @@ class Player:
 
     @property
     def rect(self):
-        return pygame.Rect(int(self.x), int(self.y), self.w, self.h)
+        return pygame.Rect(round(self.x), round(self.y), self.w, self.h)
 
     def upgrade_level(self, lvl):
         self.hero_level = min(3, max(1, lvl))
@@ -313,31 +313,41 @@ class Player:
         c_x = level.check_tile_collision(self.rect)
         if c_x:
             if self.vx > 0:
-                self.x = c_x.left - self.w - 0.01
+                self.x = float(c_x.left - self.w)
             elif self.vx < 0:
-                self.x = c_x.right + 0.01
+                self.x = float(c_x.right)
             self.vx = 0.0
 
         # Vertical
         self.y += self.vy * dt
-        self.on_ground = False
         c_y = level.check_tile_collision(self.rect)
         if c_y:
             if self.vy > 0:
-                self.y = c_y.top - self.h - 0.01
+                self.y = float(c_y.top - self.h)
                 self.vy = 0.0
                 self.on_ground = True
             elif self.vy < 0:
-                self.y = c_y.bottom + 0.01
+                self.y = float(c_y.bottom)
                 self.vy = 0.0
-
-        # One-way platform check
-        if self.vy >= 0:
-            foot_plat = level.check_one_way_platform(self.x, self.y + self.h, self.w, max(2.0, self.vy * dt))
-            if foot_plat:
-                self.y = foot_plat.top - self.h
-                self.vy = 0.0
-                self.on_ground = True
+        else:
+            # Solid ground probe 2px below feet to keep on_ground steady
+            if self.vy >= 0:
+                probe = pygame.Rect(round(self.x) + 2, round(self.y) + self.h, self.w - 4, 3)
+                ground_tile = level.check_tile_collision(probe)
+                if ground_tile:
+                    self.y = float(ground_tile.top - self.h)
+                    self.vy = 0.0
+                    self.on_ground = True
+                else:
+                    foot_plat = level.check_one_way_platform(self.x, self.y + self.h, self.w, max(3.0, self.vy * dt + 1.0))
+                    if foot_plat:
+                        self.y = float(foot_plat.top - self.h)
+                        self.vy = 0.0
+                        self.on_ground = True
+                    else:
+                        self.on_ground = False
+            else:
+                self.on_ground = False
 
     def check_tile_collision(self, level, is_vertical=False):
         c = level.check_tile_collision(self.rect)
