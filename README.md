@@ -78,16 +78,3 @@ O sistema de áudio foi expandido e sintetiza em tempo real:
 6. **Fase 6: O Pico Congelado dos Ventos** (Montanhas nevadas com pontes suspensas e saltos longos combinados com Dash)
 7. **Fase 7: A Fundição Vulcânica dos Orcs** (Lagos de lava, plataformas sincronizadas e guardas de elite com escudos)
 8. **Fase 8: A Grande Fortaleza do General Orc (O Clímax Final)** (Arena do trono em 3 andares com ondas de choque e chefe de 2 fases)
-
----
-
-## 🌐 Salvar no GitHub
-
-Configuração do usuário do Git:
-* Email: `davidbrunopatriota205@gmail.com`
-
-Para sincronizar com seu repositório remoto:
-```powershell
-git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-git push -u origin main
-```
